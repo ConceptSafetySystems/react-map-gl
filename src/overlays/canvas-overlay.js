@@ -74,7 +74,8 @@ export default class CanvasOverlay extends BaseControl<CanvasOverlayProps, *, HT
       ctx,
       isDragging,
       project: viewport.project.bind(viewport),
-      unproject: viewport.unproject.bind(viewport)
+      unproject: viewport.unproject.bind(viewport),
+      viewport
     });
 
     ctx.restore();
