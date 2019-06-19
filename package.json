@@ -80,9 +80,6 @@
   "peerDependencies": {
     "react": ">=16.3.0"
   },
-  "pre-commit": [
-    "test-fast"
-  ],
   "engines": {
     "node": ">= 4",
     "npm": ">= 3"
