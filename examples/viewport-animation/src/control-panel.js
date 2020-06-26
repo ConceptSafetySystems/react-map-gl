@@ -1,8 +1,7 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
+import {PureComponent} from 'react';
 
-import CITIES from '../../data/cities.json';
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
+import CITIES from '../../.data/cities.json';
 
 export default class ControlPanel extends PureComponent {
   _renderButton = (city, index) => {
@@ -21,15 +20,13 @@ export default class ControlPanel extends PureComponent {
   };
 
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Camera Transition</h3>
         <p>Smooth animate of the viewport.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/viewport-animation"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/viewport-animation"
             target="_new"
           >
             View Code ↗
@@ -38,7 +35,7 @@ export default class ControlPanel extends PureComponent {
         <hr />
 
         {CITIES.filter(city => city.state === 'California').map(this._renderButton)}
-      </Container>
+      </div>
     );
   }
 }

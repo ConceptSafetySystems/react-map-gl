@@ -1,7 +1,10 @@
-import React, {Component} from 'react';
+import * as React from 'react';
+import {Component} from 'react';
 import {render} from 'react-dom';
 import DeckGL, {ArcLayer} from 'deck.gl';
 import MapGL from 'react-map-gl';
+
+const TOKEN = ''; // Set your mapbox token here
 
 export default class App extends Component {
   constructor(props) {
@@ -31,7 +34,7 @@ export default class App extends Component {
         height="100%"
         maxPitch={85}
         onViewportChange={this._onViewportChange}
-        mapboxApiAccessToken="<YOUR TOKEN HERE>"
+        mapboxApiAccessToken={TOKEN}
       >
         <DeckGL
           viewState={viewport}

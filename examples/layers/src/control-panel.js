@@ -1,4 +1,5 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
+import {PureComponent} from 'react';
 import {fromJS} from 'immutable';
 import MAP_STYLE from '../../map-style-basic-v8.json';
 
@@ -23,8 +24,6 @@ const colorClass = {
   background: 'background-color',
   symbol: 'text-color'
 };
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
 
 export default class StyleControls extends PureComponent {
   constructor(props) {
@@ -112,15 +111,13 @@ export default class StyleControls extends PureComponent {
   }
 
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Dynamic Styling</h3>
         <p>Dynamically show/hide map layers and change color with Immutable map style.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/layers"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/layers"
             target="_new"
           >
             View Code ↗
@@ -128,7 +125,7 @@ export default class StyleControls extends PureComponent {
         </div>
         <hr />
         {categories.map(name => this._renderLayerControl(name))}
-      </Container>
+      </div>
     );
   }
 }

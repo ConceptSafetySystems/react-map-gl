@@ -1,6 +1,5 @@
-import React, {PureComponent} from 'react';
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 export default class ControlPanel extends PureComponent {
   render() {
@@ -20,10 +19,8 @@ export default class ControlPanel extends PureComponent {
       return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
     };
 
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Heatmap</h3>
         <p>
           Map showing earthquakes
@@ -60,13 +57,13 @@ export default class ControlPanel extends PureComponent {
         </p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/heatmap"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/heatmap"
             target="_new"
           >
             View Code ↗
           </a>
         </div>
-      </Container>
+      </div>
     );
   }
 }

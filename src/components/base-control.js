@@ -18,7 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-import {PureComponent, createElement, createRef} from 'react';
+import * as React from 'react';
+import {PureComponent, createRef} from 'react';
 import PropTypes from 'prop-types';
 import MapContext from './map-context';
 
@@ -82,7 +83,7 @@ export default class BaseControl<
         click: this._onClick,
         dblclick: this._onDblClick
       };
-      eventManager.on(this._events, ref);
+      eventManager.watch(this._events, ref);
     }
   }
 
@@ -126,9 +127,13 @@ export default class BaseControl<
   }
 
   render() {
-    return createElement(MapContext.Consumer, null, context => {
-      this._context = context;
-      return this._render();
-    });
+    return (
+      <MapContext.Consumer>
+        {context => {
+          this._context = context;
+          return this._render();
+        }}
+      </MapContext.Consumer>
+    );
   }
 }

@@ -18,13 +18,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-import {createElement, createRef} from 'react';
+import * as React from 'react';
+import {createRef} from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 
 import {getDynamicPosition, ANCHOR_POSITION} from '../utils/dynamic-position';
 
 import type {BaseControlProps} from './base-control';
+import {crispPercentage, crispPixel} from '../utils/crisp-pixel';
 import type {PositionType} from '../utils/dynamic-position';
 
 const propTypes = Object.assign({}, BaseControl.propTypes, {
@@ -135,11 +137,15 @@ export default class Popup extends BaseControl<PopupProps, *, HTMLDivElement> {
     const anchorPosition = ANCHOR_POSITION[positionType];
     const left = x + offsetLeft;
     const top = y + offsetTop;
+
+    const el = this._containerRef.current;
+    const xPercentage = crispPercentage(el, -anchorPosition.x * 100);
+    const yPercentage = crispPercentage(el, -anchorPosition.y * 100, 'y');
     const style = {
       position: 'absolute',
       transform: `
-        translate(${-anchorPosition.x * 100}%, ${-anchorPosition.y * 100}%)
-        translate(${left}px, ${top}px)
+        translate(${xPercentage}%, ${yPercentage}%)
+        translate(${crispPixel(left)}px, ${crispPixel(top)}px)
       `,
       display: undefined,
       zIndex: undefined
@@ -164,22 +170,25 @@ export default class Popup extends BaseControl<PopupProps, *, HTMLDivElement> {
       evt.stopPropagation();
     }
 
-    if (
-      evt.type === 'click' &&
-      (this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button')
-    ) {
+    if (this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button') {
       this.props.onClose();
+
+      const {eventManager} = this._context;
+      if (eventManager) {
+        // Using with InteractiveMap
+        // After we call `onClose` on `anyclick`, this component will be unmounted
+        // at which point we unregister the event listeners and stop blocking propagation.
+        // Then after a short delay a `click` event will fire
+        // Attach a one-time event listener here to prevent it from triggering `onClick` of the base map
+        eventManager.once('click', e => e.stopPropagation(), evt.target);
+      }
     }
   };
 
   _renderTip(positionType: PositionType) {
     const {tipSize} = this.props;
 
-    return createElement('div', {
-      key: 'tip',
-      className: 'mapboxgl-popup-tip',
-      style: {borderWidth: tipSize}
-    });
+    return <div key="tip" className="mapboxgl-popup-tip" style={{borderWidth: tipSize}} />;
   }
 
   _renderContent() {
@@ -187,27 +196,20 @@ export default class Popup extends BaseControl<PopupProps, *, HTMLDivElement> {
     // If eventManager does not exist (using with static map), listen to React event
     const onClick = this._context.eventManager ? null : this._onClick;
 
-    return createElement(
-      'div',
-      {
-        key: 'content',
-        ref: this._contentRef,
-        className: 'mapboxgl-popup-content',
-        onClick
-      },
-      [
-        closeButton &&
-          createElement(
-            'button',
-            {
-              key: 'close-button',
-              className: 'mapboxgl-popup-close-button',
-              type: 'button'
-            },
-            '×'
-          ),
-        children
-      ]
+    return (
+      <div
+        key="content"
+        ref={this._contentRef}
+        className="mapboxgl-popup-content"
+        onClick={onClick}
+      >
+        {closeButton && (
+          <button key="close-button" className="mapboxgl-popup-close-button" type="button">
+            ×
+          </button>
+        )}
+        {children}
+      </div>
     );
   }
 
@@ -219,14 +221,15 @@ export default class Popup extends BaseControl<PopupProps, *, HTMLDivElement> {
     const positionType = this._getPosition(x, y);
     const containerStyle = this._getContainerStyle(x, y, z, positionType);
 
-    return createElement(
-      'div',
-      {
-        className: `mapboxgl-popup mapboxgl-popup-anchor-${positionType} ${className}`,
-        style: containerStyle,
-        ref: this._containerRef
-      },
-      [this._renderTip(positionType), this._renderContent()]
+    return (
+      <div
+        className={`mapboxgl-popup mapboxgl-popup-anchor-${positionType} ${className}`}
+        style={containerStyle}
+        ref={this._containerRef}
+      >
+        {this._renderTip(positionType)}
+        {this._renderContent()}
+      </div>
     );
   }
 }

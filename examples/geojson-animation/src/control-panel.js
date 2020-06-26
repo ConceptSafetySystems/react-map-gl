@@ -1,24 +1,21 @@
-import React, {PureComponent} from 'react';
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 export default class ControlPanel extends PureComponent {
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Animated GeoJSON</h3>
         <p>Render animation by updating GeoJSON data source.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/geojson-animation"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/geojson-animation"
             target="_new"
           >
             View Code ↗
           </a>
         </div>
-      </Container>
+      </div>
     );
   }
 }

@@ -1,5 +1,5 @@
 // @flow
-import {createElement} from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 
@@ -7,6 +7,7 @@ import MapState from '../utils/map-state';
 import {LINEAR_TRANSITION_PROPS} from '../utils/map-controller';
 
 import deprecateWarn from '../utils/deprecate-warn';
+import {compareVersions} from '../utils/version';
 
 import type {BaseControlProps} from './base-control';
 
@@ -22,13 +23,20 @@ const propTypes = Object.assign({}, BaseControl.propTypes, {
   // Show/hide compass button
   showCompass: PropTypes.bool,
   // Show/hide zoom buttons
-  showZoom: PropTypes.bool
+  showZoom: PropTypes.bool,
+  // Custom labels assigned to the controls
+  zoomInLabel: PropTypes.string,
+  zoomOutLabel: PropTypes.string,
+  compassLabel: PropTypes.string
 });
 
 const defaultProps = Object.assign({}, BaseControl.defaultProps, {
   className: '',
   showCompass: true,
-  showZoom: true
+  showZoom: true,
+  zoomInLabel: 'Zoom In',
+  zoomOutLabel: 'Zoom Out',
+  compassLabel: 'Reset North'
 });
 
 export type NavigationControlProps = BaseControlProps & {
@@ -36,7 +44,10 @@ export type NavigationControlProps = BaseControlProps & {
   onViewStateChange?: Function,
   onViewportChange?: Function,
   showCompass: boolean,
-  showZoom: boolean
+  showZoom: boolean,
+  zoomInLabel: string,
+  zoomOutLabel: string,
+  compassLabel: string
 };
 
 type ViewportProps = {
@@ -46,6 +57,14 @@ type ViewportProps = {
   pitch: number,
   bearing: number
 };
+
+// Mapbox version flags. CSS classes were changed in certain versions.
+const VERSION_LEGACY = 1;
+const VERSION_1_6 = 2;
+
+function getUIVersion(mapboxVersion: string): number {
+  return compareVersions(mapboxVersion, '1.6.0') >= 0 ? VERSION_1_6 : VERSION_LEGACY;
+}
 
 /*
  * PureComponent doesn't update when context changes, so
@@ -64,6 +83,8 @@ export default class NavigationControl extends BaseControl<
     // Check for deprecated props
     deprecateWarn(props);
   }
+
+  _uiVersion: number;
 
   _updateViewport(opts: $Shape<ViewportProps>) {
     const {viewport} = this._context;
@@ -95,38 +116,46 @@ export default class NavigationControl extends BaseControl<
 
   _renderCompass() {
     const {bearing} = this._context.viewport;
-    return createElement('span', {
-      className: 'mapboxgl-ctrl-compass-arrow',
-      style: {transform: `rotate(${-bearing}deg)`}
-    });
+    const style = {transform: `rotate(${-bearing}deg)`};
+
+    return this._uiVersion === VERSION_1_6 ? (
+      <span className="mapboxgl-ctrl-icon" aria-hidden="true" style={style} />
+    ) : (
+      <span className="mapboxgl-ctrl-compass-arrow" style={style} />
+    );
   }
 
   _renderButton(type: string, label: string, callback: Function, children: any) {
-    return createElement('button', {
-      key: type,
-      className: `mapboxgl-ctrl-icon mapboxgl-ctrl-${type}`,
-      type: 'button',
-      title: label,
-      onClick: callback,
-      children
-    });
+    return (
+      <button
+        key={type}
+        className={`mapboxgl-ctrl-icon mapboxgl-ctrl-${type}`}
+        type="button"
+        title={label}
+        onClick={callback}
+      >
+        {children || <span className="mapboxgl-ctrl-icon" aria-hidden="true" />}
+      </button>
+    );
   }
 
   _render() {
-    const {className, showCompass, showZoom} = this.props;
+    const {className, showCompass, showZoom, zoomInLabel, zoomOutLabel, compassLabel} = this.props;
 
-    return createElement(
-      'div',
-      {
-        className: `mapboxgl-ctrl mapboxgl-ctrl-group ${className}`,
-        ref: this._containerRef
-      },
-      [
-        showZoom && this._renderButton('zoom-in', 'Zoom In', this._onZoomIn),
-        showZoom && this._renderButton('zoom-out', 'Zoom Out', this._onZoomOut),
-        showCompass &&
-          this._renderButton('compass', 'Reset North', this._onResetNorth, this._renderCompass())
-      ]
+    if (!this._uiVersion) {
+      // map may not exist if context is provided by user application (e.g. DeckGL)
+      // in which case we fallback to the most recent UI
+      const {map} = this._context;
+      this._uiVersion = map ? getUIVersion(map.version) : VERSION_1_6;
+    }
+
+    return (
+      <div className={`mapboxgl-ctrl mapboxgl-ctrl-group ${className}`} ref={this._containerRef}>
+        {showZoom && this._renderButton('zoom-in', zoomInLabel, this._onZoomIn)}
+        {showZoom && this._renderButton('zoom-out', zoomOutLabel, this._onZoomOut)}
+        {showCompass &&
+          this._renderButton('compass', compassLabel, this._onResetNorth, this._renderCompass())}
+      </div>
     );
   }
 }

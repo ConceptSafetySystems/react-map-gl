@@ -2,7 +2,10 @@
 
 `react-map-gl` does not expose the transition API from `mapbox-gl-js` since it is designed to be a stateless component, and needs to synchronize with separate overlay systems such as deck.gl.
 
-Instead, transitions can be defined using [InteractiveMap](/docs/components/interactive-map.md)'s transition props. For example:
+Instead, transitions can be defined using [InteractiveMap](/docs/api-reference/interactive-map.md)'s transition props.
+
+## Example: Fly to a New Location
+
 ```jsx
 import ReactMapGL, {LinearInterpolator, FlyToInterpolator} from 'react-map-gl';
 // 3rd-party easing functions
@@ -50,12 +53,12 @@ class MyApp extends React.Component {
 See [viewport animation](#examples/viewport-animation) for a complete example.
 
 
-## Transition Viewport To A Bounding Box
+## Example: Transition Viewport To A Bounding Box
 
 You can use the `WebMercatorViewport` utility to find the target viewport that fits around a lngLat bounding box:
 
 ```js
-import WebMercatorViewport from 'viewport-mercator-project';
+import {WebMercatorViewport} from 'react-map-gl';
 ```
 
 ```js
@@ -78,26 +81,29 @@ import WebMercatorViewport from 'viewport-mercator-project';
     };
 ```
 
-[Documentation of WebMercatorViewport](https://uber-common.github.io/viewport-mercator-project/#/documentation/api-reference/webmercatorviewport)
+[Documentation of WebMercatorViewport](https://uber.github.io/react-map-gl/#/documentation/api-reference/web-mercator-viewport)
 
 
-## InteractiveMap's Transition Props
+## Controlling Map Transitions
 
-See properties of [InteractiveMap](/docs/components/interactive-map.md).
+### InteractiveMap's Transition Props
 
-- `transitionDuration` {Number}
-- `transitionInterpolator` {Object}
-- `transitionEasing` {Function}
-- `transitionInterruption` {Number}
-- `onTransitionStart` {Function}
-- `onTransitionInterrupt` {Function}
-- `onTransitionEnd` {Function}
+See properties of [InteractiveMap](/docs/api-reference/interactive-map.md##transitions).
+
+- `transitionDuration` (Number)
+- `transitionInterpolator` (Object)
+- `transitionEasing` (Function)
+- `transitionInterruption` (Number)
+- `onTransitionStart` (Function)
+- `onTransitionInterrupt` (Function)
+- `onTransitionEnd` (Function)
 
 
-## Transition and the onViewportChange Callback
+### Transition and the onViewportChange Callback
 
 `InteractiveMap` is designed to be a stateless component. For transitions to work, the application must update the viewport props returned by the `onViewportChange` callback:
-```
+
+```js
 <ReactMapGL
     {...this.state.viewport}
     onViewportChange={(viewport) => this.setState({viewport})}
@@ -112,15 +118,18 @@ Remarks:
   + `transitionEasing`
   + `transitionInterruption`
 - The default interaction/transition behavior can always be intercepted and overwritten in the handler for `onViewportChange`. However, if a transition is in progress, the properties that are being transitioned (e.g. longitude and latitude) should not be manipulated, otherwise the change will be interpreted as an interruption of the transition.
+- When using `FlyToInterpolator` for `transitionInterpolator`, `transitionDuration` can be set to `'auto'` where actual duration is auto calculated based on start and end viewports and is linear to the distance between them. This duration can be further customized using `speed` parameter to `FlyToInterpolator` constructor.
 
 
-## Transition Interpolators
+### Transition Interpolators
 
 A `TransitionInterpolator` instance must be supplied to the `transitionInterpolator` prop. It contains the following methods:
+
 - `arePropsEqual(currentProps, nextProps)` - called to determine if transition should be triggered when viewport props update.
 - `initiateProps(startProps, endProps)` - called before transition starts to pre-process the start and end viewport props.
 - `interpolateProps(startProps, endProps, t)` - called to get viewport props in transition. `t` is a time factor between `[0, 1]`.
 
 react-map-gl offers two built-in interpolator classes:
-- [LinearInterpolator](/docs/components/linear-interpolator.md)
-- [FlyToInterpolator](/docs/components/fly-to-interpolator.md)
+
+- [LinearInterpolator](/docs/api-reference/linear-interpolator.md)
+- [FlyToInterpolator](/docs/api-reference/fly-to-interpolator.md)

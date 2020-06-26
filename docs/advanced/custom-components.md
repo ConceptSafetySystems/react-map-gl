@@ -1,8 +1,8 @@
 # Custom Components
 
-[Marker](/docs/components/marker.md),
-[Popup](/docs/components/popup.md), and
-[NavigationControl](/docs/components/navigation-control.md)
+[Marker](/docs/api-reference/marker.md),
+[Popup](/docs/api-reference/popup.md), and
+[NavigationControl](/docs/api-reference/navigation-control.md)
 all extend the `BaseControl` React component. You may also create your own map control components.
 
 ## Example
@@ -10,7 +10,7 @@ all extend the `BaseControl` React component. You may also create your own map c
 The following component renders a label "(longitude, latitude)" at the given coordinate:
 
 ```js
-import React from 'react';
+import * as React from 'react';
 import {BaseControl} from 'react-map-gl';
 
 class CustomMarker extends BaseControl {
@@ -28,7 +28,7 @@ class CustomMarker extends BaseControl {
 
     return (
       <div ref={this._containerRef}
-        style={markerStyle} />
+        style={markerStyle} >
         ({longitude}, {latitude})
       </div>
     );
@@ -78,4 +78,4 @@ Implement this method to render the content of this component. `this._context` i
 
 
 ## Source
-[base-control.js](https://github.com/uber/react-map-gl/tree/5.0-release/src/components/base-control.js)
+[base-control.js](https://github.com/visgl/react-map-gl/tree/5.2-release/src/components/base-control.js)

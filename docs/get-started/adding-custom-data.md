@@ -38,7 +38,7 @@ const mapStyle = fromJS({
 
 For details about data sources and layer configuration, check out the [Mapbox style specification](https://www.mapbox.com/mapbox-gl-js/style-spec).
 
-For dynamically updating data and layers, check out the [GeoJSON](#examples/geojson) and [GeoJSON animation](#examples/geojson-animation) examples.
+For dynamically updating data and layers, check out the [GeoJSON](http://uber.github.io/react-map-gl/examples/geojson) and [GeoJSON animation](http://uber.github.io/react-map-gl/examples/geojson-animation) examples.
 
 
 ## Overlays
@@ -73,7 +73,7 @@ import {SVGOverlay, HTMLOverlay, CanvasOverlay} from 'react-map-gl';
 
 ### Example Overlays
 
-There are a couple of [additional overlays](https://github.com/uber/react-map-gl/tree/5.0-release/examples/additional-overlays) in the examples folder that can be copied into applications `ScatterplotOverlay`, `DraggablePointsOverlay`, `ChoroplethOverlay`.
+There are a couple of [additional overlays](https://github.com/visgl/react-map-gl/tree/5.2-release/examples/additional-overlays) in the examples folder that can be copied into applications `ScatterplotOverlay`, `DraggablePointsOverlay`, `ChoroplethOverlay`.
 
 
 ### Third-party Overlays
@@ -91,4 +91,4 @@ import cities from 'example-cities';
 </MapGL>
 ```
 
-Want to create and share your own overlay? Check the [examples/additional-overlays](https://github.com/uber/react-map-gl/tree/5.0-release/examples/additional-overlays) folder for examples.
+Want to create and share your own overlay? Check the [examples/additional-overlays](https://github.com/visgl/react-map-gl/tree/5.2-release/examples/additional-overlays) folder for examples.

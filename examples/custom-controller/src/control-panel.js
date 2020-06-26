@@ -1,7 +1,7 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 const camelPattern = /(^|[A-Z])[a-z]*/g;
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
 
 export default class ControlPanel extends PureComponent {
   _formatSettingName(name) {
@@ -22,16 +22,15 @@ export default class ControlPanel extends PureComponent {
   }
 
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
     const {settings} = this.props;
 
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Custom Controller</h3>
         <p>Override default event handling logic.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/custom-controller"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/custom-controller"
             target="_new"
           >
             View Code ↗
@@ -42,7 +41,7 @@ export default class ControlPanel extends PureComponent {
         {this._renderCheckbox('invertZoom', settings.invertZoom)}
         {this._renderCheckbox('invertPan', settings.invertPan)}
         {this._renderCheckbox('longPress', settings.longPress)}
-      </Container>
+      </div>
     );
   }
 }

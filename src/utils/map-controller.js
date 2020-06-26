@@ -22,6 +22,7 @@
 import MapState from './map-state';
 import {LinearInterpolator} from './transition';
 import TransitionManager, {TRANSITION_EVENTS} from './transition-manager';
+import debounce from './debounce';
 
 import type {MjolnirEvent} from 'mjolnir.js';
 
@@ -43,7 +44,7 @@ const ZOOM_ACCEL = 0.01;
 const EVENT_TYPES = {
   WHEEL: ['wheel'],
   PAN: ['panstart', 'panmove', 'panend'],
-  PINCH: ['pinchstart', 'pinchmove', 'pinchend'],
+  PINCH: ['pinchstart', 'pinchmove', 'pinchend', 'pinchcancel'],
   DOUBLE_TAP: ['doubletap'],
   KEYBOARD: ['keydown']
 };
@@ -75,6 +76,7 @@ export default class MapController {
 
   constructor() {
     (this: any).handleEvent = this.handleEvent.bind(this);
+    (this: any)._onWheelEnd = debounce(this._onWheelEnd, 100);
   }
 
   /**
@@ -95,6 +97,7 @@ export default class MapController {
         return this._onPinchStart(event);
       case 'pinchmove':
         return this._onPinch(event);
+      case 'pinchcancel':
       case 'pinchend':
         return this._onPinchEnd(event);
       case 'doubletap':
@@ -132,6 +135,7 @@ export default class MapController {
   /* Callback util */
   // formats map state and invokes callback function
   updateViewport(newMapState: MapState, extraProps: any = {}, extraState: any = {}) {
+    // Always trigger callback on initial update (resize)
     const oldViewport = this.mapState ? this.mapState.getViewportProps() : {};
     const newViewport = Object.assign({}, newMapState.getViewportProps(), extraProps);
 
@@ -173,12 +177,14 @@ export default class MapController {
     this.onViewportChange = onViewportChange;
     this.onStateChange = onStateChange;
 
-    if (!this.mapStateProps || this.mapStateProps.height !== options.height) {
+    const dimensionChanged = !this.mapStateProps || this.mapStateProps.height !== options.height;
+
+    this.mapStateProps = options;
+
+    if (dimensionChanged) {
       // Dimensions changed, normalize the props
       this.updateViewport(new MapState(options));
     }
-
-    this.mapStateProps = options;
     // Update transition
     this._transitionManager.processViewportChange(
       Object.assign({}, options, {
@@ -316,9 +322,13 @@ export default class MapController {
 
     const newMapState = this.mapState.zoom({pos, scale});
     this.updateViewport(newMapState, NO_TRANSITION_PROPS, {isZooming: true});
-    // This is a one-off event, state should not persist
-    this.setState({isZooming: false});
+    // Wheel events are discrete, let's wait a little before resetting isZooming
+    this._onWheelEnd();
     return true;
+  }
+
+  _onWheelEnd() {
+    this.setState({isZooming: false});
   }
 
   // Default handler for the `pinchstart` event.
@@ -386,7 +396,8 @@ export default class MapController {
       newMapState,
       Object.assign({}, LINEAR_TRANSITION_PROPS, {
         transitionInterpolator: new LinearInterpolator({around: pos})
-      })
+      }),
+      {isZooming: true}
     );
     return true;
   }

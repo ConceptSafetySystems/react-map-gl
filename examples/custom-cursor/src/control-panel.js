@@ -1,4 +1,5 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 // Layer id patterns by category
 const layerSelector = {
@@ -7,8 +8,6 @@ const layerSelector = {
   roads: /bridge|road|tunnel/,
   labels: /label|place|poi/
 };
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
 
 function getLayerFilter(categories, layerId) {
   for (const key in categories) {
@@ -61,15 +60,13 @@ export default class StyleControls extends PureComponent {
   }
 
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Custom Cursor</h3>
         <p>Customize the cursor based on interactivity.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/custom-cursor"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/custom-cursor"
             target="_new"
           >
             View Code ↗
@@ -78,7 +75,7 @@ export default class StyleControls extends PureComponent {
         <hr />
         <p>Clickable layers</p>
         {Object.keys(layerSelector).map(name => this._renderLayerControl(name))}
-      </Container>
+      </div>
     );
   }
 }

@@ -132,7 +132,10 @@ export default class TransitionManager {
   }
 
   _isTransitionEnabled(props: ViewportProps): boolean {
-    return props.transitionDuration > 0 && Boolean(props.transitionInterpolator);
+    const {transitionDuration, transitionInterpolator} = props;
+    return (
+      (transitionDuration > 0 || transitionDuration === 'auto') && Boolean(transitionInterpolator)
+    );
   }
 
   _isUpdateDueToCurrentTransition(props: ViewportProps): boolean {
@@ -163,10 +166,20 @@ export default class TransitionManager {
   }
 
   _triggerTransition(startProps: ViewportProps, endProps: ViewportProps) {
-    assert(this._isTransitionEnabled(endProps), 'Transition is not enabled');
+    assert(this._isTransitionEnabled(endProps));
 
     if (this._animationFrame) {
       cancelAnimationFrame(this._animationFrame);
+    }
+
+    // update transitionDuration for 'auto' mode
+    const {transitionInterpolator} = endProps;
+    const duration = transitionInterpolator.getDuration
+      ? transitionInterpolator.getDuration(startProps, endProps)
+      : endProps.transitionDuration;
+
+    if (duration === 0) {
+      return;
     }
 
     const initialProps = endProps.transitionInterpolator.initializeProps(startProps, endProps);
@@ -181,7 +194,7 @@ export default class TransitionManager {
 
     this.state = {
       // Save current transition props
-      duration: endProps.transitionDuration,
+      duration,
       easing: endProps.transitionEasing,
       interpolator: endProps.transitionInterpolator,
       interruption: endProps.transitionInterruption,

@@ -18,9 +18,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-import {createElement} from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import DraggableControl from './draggable-control';
+import {crispPixel} from '../utils/crisp-pixel';
 
 import type {DraggableControlProps} from './draggable-control';
 
@@ -54,6 +55,8 @@ export default class Marker extends DraggableControl<MarkerProps> {
   static propTypes = propTypes;
   static defaultProps = defaultProps;
 
+  _control: any = null;
+
   _getPosition(): [number, number] {
     const {longitude, latitude, offsetLeft, offsetTop} = this.props;
     const {dragPos, dragOffset} = this.state;
@@ -71,23 +74,41 @@ export default class Marker extends DraggableControl<MarkerProps> {
   }
 
   _render() {
-    const {className, draggable} = this.props;
-    const {dragPos} = this.state;
-
     const [x, y] = this._getPosition();
+    const transform = `translate(${crispPixel(x)}px, ${crispPixel(y)}px)`;
+    const div = this._containerRef.current;
 
-    const containerStyle = {
-      position: 'absolute',
-      left: x,
-      top: y,
-      cursor: draggable ? (dragPos ? 'grabbing' : 'grab') : 'auto'
-    };
+    if (this._control && div) {
+      // Perf: avoid rerendering if only the viewport changed
+      div.style.transform = transform;
+    } else {
+      const {className, draggable} = this.props;
+      const {dragPos} = this.state;
 
-    return createElement('div', {
-      className: `mapboxgl-marker ${className}`,
-      ref: this._containerRef,
-      style: containerStyle,
-      children: this.props.children
-    });
+      const containerStyle = {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        transform,
+        cursor: draggable ? (dragPos ? 'grabbing' : 'grab') : 'auto'
+      };
+
+      this._control = (
+        <div
+          className={`mapboxgl-marker ${className}`}
+          ref={this._containerRef}
+          style={containerStyle}
+        >
+          {this.props.children}
+        </div>
+      );
+    }
+    return this._control;
+  }
+
+  render() {
+    // invalidate cached element
+    this._control = null;
+    return super.render();
   }
 }

@@ -1,24 +1,21 @@
-import React, {PureComponent} from 'react';
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 export default class ControlPanel extends PureComponent {
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
-
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Zoom to Bounding Box</h3>
         <p>Click on a San Fransisco Neighborhood to zoom in.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/zoom-to-bounds"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/zoom-to-bounds"
             target="_new"
           >
             View Code ↗
           </a>
         </div>
-      </Container>
+      </div>
     );
   }
 }

@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import * as React from 'react';
+import {Component} from 'react';
 import {render} from 'react-dom';
 import MapGL, {FlyToInterpolator} from 'react-map-gl';
 
@@ -27,8 +28,8 @@ export default class App extends Component {
       longitude,
       latitude,
       zoom: 11,
-      transitionInterpolator: new FlyToInterpolator(),
-      transitionDuration: 3000
+      transitionInterpolator: new FlyToInterpolator({speed: 1.2}),
+      transitionDuration: 'auto'
     });
   };
 
@@ -42,9 +43,9 @@ export default class App extends Component {
           {...settings}
           width="100%"
           height="100%"
-          mapStyle="mapbox://styles/mapbox/dark-v9"
+          mapStyle="mapbox://styles/mapbox/light-v9"
           onViewportChange={this._onViewportChange}
-          dragToRotate={false}
+          dragRotate={false}
           mapboxApiAccessToken={MAPBOX_TOKEN}
         />
         <ControlPanel

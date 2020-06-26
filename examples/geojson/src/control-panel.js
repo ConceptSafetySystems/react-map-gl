@@ -1,14 +1,12 @@
-import React, {PureComponent} from 'react';
-
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 export default class ControlPanel extends PureComponent {
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
     const {settings} = this.props;
 
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Interactive GeoJSON</h3>
         <p>
           Map showing median household income by state in year <b>{settings.year}</b>. Hover over a
@@ -19,7 +17,7 @@ export default class ControlPanel extends PureComponent {
         </p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/geojson"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/geojson"
             target="_new"
           >
             View Code ↗
@@ -38,7 +36,7 @@ export default class ControlPanel extends PureComponent {
             onChange={evt => this.props.onChange('year', evt.target.value)}
           />
         </div>
-      </Container>
+      </div>
     );
   }
 }

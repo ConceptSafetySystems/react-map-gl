@@ -1,7 +1,7 @@
 {
   "name": "react-map-gl",
   "description": "A React wrapper for MapboxGL-js and overlay API.",
-  "version": "4.0.0-beta.7",
+  "version": "5.2.7",
   "keywords": [
     "mapbox",
     "mapbox-gl",
@@ -11,13 +11,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/uber/react-map-gl.git"
+    "url": "https://github.com/visgl/react-map-gl.git"
   },
   "license": "MIT",
   "main": "dist/es5/index.js",
   "module": "dist/esm/index.js",
   "esnext": "dist/es6/index.js",
   "browser": {
+    "./src/utils/mapboxgl.js": "./src/utils/mapboxgl.browser.js",
     "./dist/es5/utils/mapboxgl.js": "./dist/es5/utils/mapboxgl.browser.js",
     "./dist/esm/utils/mapboxgl.js": "./dist/esm/utils/mapboxgl.browser.js",
     "./dist/es6/utils/mapboxgl.js": "./dist/es6/utils/mapboxgl.browser.js"
@@ -29,7 +30,7 @@
   ],
   "scripts": {
     "typecheck": "flow check",
-    "start": "(cd examples/main && yarn && yarn start-local)",
+    "start": "(cd examples/controls && yarn && yarn start-local)",
     "bootstrap": "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn && ocular-bootstrap",
     "clean": "ocular-clean",
     "build": "ocular-clean && ocular-build",
@@ -45,10 +46,10 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "mapbox-gl": "^1.0.0",
-    "mjolnir.js": "^2.1.1",
+    "mjolnir.js": "^2.4.0",
     "prop-types": "^15.7.2",
     "react-virtualized-auto-sizer": "^1.0.2",
-    "viewport-mercator-project": "^6.1.0"
+    "viewport-mercator-project": "^6.2.3 || ^7.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.4.4",
@@ -57,8 +58,8 @@
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.0.0",
-    "@probe.gl/bench": "^3.0.2",
-    "@probe.gl/test-utils": "^3.0.2",
+    "@probe.gl/bench": "^3.2.1",
+    "@probe.gl/test-utils": "^3.2.1",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.0",
     "coveralls": "^3.0.0",
@@ -69,7 +70,7 @@
     "flow-bin": "^0.98.1",
     "immutable": "^3.8.2",
     "jsdom": "^15.0.0",
-    "ocular-dev-tools": "0.0.26",
+    "ocular-dev-tools": "^0.1.8",
     "pre-commit": "^1.2.2",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",

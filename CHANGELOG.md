@@ -1,11 +1,162 @@
 # CHANGELOG
 
+# Version 5.2
+
+## 5.2.7 (June 5, 2020)
+
+- NavigationControl: fall back to the latest UI version (#1124)
+- [Geolocate] fix auto when location blocked (#1126)
+
+## 5.2.6 (June 4, 2020)
+
+- [Geolocate] Auto trigger when component loads (#1116)
+- Check if map style is loaded before removing source or layer (#1123)
+
+## 5.2.5 (Apr 20, 2020)
+
+- Migrate to import * as React from 'react' (#1038)
+- Fix issue where translate by partial pixels causes blurry rendering (#1039)
+- Bump dev tools (#1040)
+- Correct interaction state on double click (#1081)
+- Fix edge case in transitionDuration:auto (#1080)
+
+## 5.2.3 (Feb 10, 2020)
+
+- Sanity check in source/layer update (#1022)
+
+## 5.2.2 (Feb 3, 2020)
+
+- Bump mjolnir.js dependency (#990)
+- Re-export setRTLTextPlugin plugin (#1010)
+- Fix GeolocateControl error when used with StaticMap (#1012)
+- Fix issue where adding popup enables double click recognizer (#1013)
+
+## 5.2.1 (Jan 12, 2020)
+
+- Deep compare source props (#985)
+
+## 5.2.0 (Jan 6, 2020)
+
+- Export WebMercatorViewport (#979)
+
+# Version 5.1
+
+## 5.1.7 (Jan 2, 2020)
+- Fix flyToInterpolator crash when transitioning to the same viewport center (#975)
+- Fix NavigationControl crash when used with external context (#974)
+
+## 5.1.6 (Dec 30, 2019)
+- Upgrade viewport-mercator-project (#961)
+- Fix control icons when used with mapbox-gl@>=1.6 (#967)
+- Add ScaleControl (#966)
+- Enhance GeolocateControl component (#761)
+- Fix React state update warning (#968)
+
+## 5.1.5 (Dec 18, 2019)
+- marker component perf (#949)
+- Allow customizing labels in NavigationControl and GeolocateControl (#959)
+- Remove marker when GeolocateControl is disabled (#960)
+
+## 5.1.4 (Dec 16, 2019)
+- Fix TransitionManager when used with deck.gl's interpolators (#956)
+
+## 5.1.3 (Nov 22, 2019)
+- Remove overwritten dotElement from geolocate control (#944)
+- Fix geolocate control crash: disable Mapbox's showUserLocation marker (#943)
+
+## 5.1.2 (Nov 8, 2019)
+- Fix geolocate control crash (#934)
+
+## 5.1.1 (Oct 31, 2019)
+- Fix more crashes when source/layer components are removed (#933)
+
+## 5.1.0 (Oct 30, 2019)
+- Avoid mutating style objects during normalization (#926)
+- Fix crash during Source component removal (#928)
+- Ignore empty mapStyle (#927)
+
 # Version 5.0
+
+## 5.0.12 (Oct 8, 2019)
+- Use JSX sources/layers in examples (PR 2/2) (#897)
+- Add React Source and Layer components (PR 1/2) (#896)
+
+## 5.0.11 (Sep 20, 2019)
+- Add babel react preset and migrate react components to jsx (#875)
+
+## 5.0.10 (Aug 13, 2019)
+- React 16.9.0 deprecated lifecycles (#861)
+- remove deprecated react lifecycle methods (#863)
+
+## 5.0.8 (Aug 07, 2019)
+- Add pinchcancel handler (#859)
+- fix delay after clicking close button (#857)
+
+## 5.0.7 (July 16, 2019)
+- Remove event manager properly on unmount (#847)
+
+## 5.0.6 (July 15, 2019)
+- Bump mjolnir (#839)
+- Fix compressed popup when reaching right bound of map (#823)
+
+## 5.0.4 (July 8, 2019)
+- Fix interaction state when using mouse wheel (#840)
+
+## 5.0.3 (June 6, 2019)
+- Fix popup styling (#818)
+
+## 5.0.2 (June 4, 2019)
+- Fix style diff warning when reusing map (#816)
+
+## 5.0.1 (June 4, 2019)
+- bump mjolnir version (#812)
 
 ## 5.0.0 (May 31, 2019)
 - Update mapbox-gl to 1.0.0 (#795)
 
 # Version 4.1
+
+## 4.1.16 (Oct 8, 2019)
+- Use JSX sources/layers in examples (PR 2/2) (#897)
+- Add React Source and Layer components (PR 1/2) (#896)
+- Fix draw polygon example styling (#899)
+
+## 4.1.15 (Sept 23, 2019)
+- Add babel react preset and migrate react components to jsx (#875)
+
+## 4.1.14 (Sept 23, 2019)
+- Viewport flyTo Interpolation: add support for auto duration and other options. (#866)
+
+## 4.1.13 (Aug 20, 2019)
+
+## 4.1.12 (Aug 12, 2019)
+
+- React 16.9.0 deprecated lifecycles (#861)
+- remove deprecated react lifecycle methods (#863)
+
+## 4.1.11 (Aug 7, 2019)
+- Add pinchcancel handler (#859)
+- fix delay after clicking close button (#857)
+
+## 4.1.10 (July 15, 2019)
+- Remove event manager properly on unmount (#847)
+
+## 4.1.9 (July 15, 2019)
+- Bump mjolnir (#839)
+- Fix compressed popup when reaching right bound of map (#823)
+
+## 4.1.8 (July 8, 2019)
+- Fix interaction state when using mouse wheel (#840)
+
+## 4.1.7 (June 6, 2019)
+- Fix popup styling (#818)
+
+## 4.1.6 (June 4, 2019)
+- Fix style diff warning when reusing map (#816)
+
+## 4.1.5 (June 4, 2019)
+- bump mjolnir version (#812)
+- mapbox-gl 0.54
 
 ## 4.1.4 (May 31, 2019)
 - Pass callbacks via MapContext (#799)
@@ -284,7 +435,7 @@ Add babel transform-runtime to es5 build for IE11 support.
 
 ## Version 3.0.0 (July 27, 2017)
 
-This is a major release of the library. For more information, please see [What's new](https://github.com/uber/react-map-gl/blob/3.0-release/docs/whats-new.md) in latest documentation.
+This is a major release of the library. For more information, please see [What's new](https://github.com/visgl/react-map-gl/blob/3.0-release/docs/whats-new.md) in latest documentation.
 
 ## Version 2.0.2 (Feb 09, 2017)
 
@@ -405,7 +556,7 @@ This is a major release of the library. For more information, please see [What's
 **Limitations:** The existing overlays (HTMLOverlay, CanvasOverlay,
   SVGOverlay etc) do not currently support perspective mode.
   For a set of overlays that do support perspective mode, see
-  [deck.gl](https://github.com/uber/deck.gl)
+  [deck.gl](https://github.com/visgl/deck.gl)
 
 Note: The map state reported by onViewportChanged may now contain additional
 state fields (tracking not only pitch and bearing, but also transient

@@ -22,6 +22,8 @@
 export {default} from './components/interactive-map';
 export {default as InteractiveMap} from './components/interactive-map';
 export {default as StaticMap} from './components/static-map';
+export {default as Source} from './components/source';
+export {default as Layer} from './components/layer';
 
 // React Controls
 export {default as BaseControl} from './components/base-control';
@@ -30,6 +32,7 @@ export {default as Popup} from './components/popup';
 export {default as FullscreenControl} from './components/fullscreen-control';
 export {default as GeolocateControl} from './components/geolocate-control';
 export {default as NavigationControl} from './components/navigation-control';
+export {default as ScaleControl} from './components/scale-control';
 
 // Overlays
 export {default as CanvasOverlay} from './overlays/canvas-overlay';
@@ -44,6 +47,8 @@ export {
   ViewportFlyToInterpolator as FlyToInterpolator
 } from './utils/transition';
 export {default as MapController} from './utils/map-controller';
+export {WebMercatorViewport} from 'viewport-mercator-project';
+export {default as setRTLTextPlugin} from './utils/set-rtl-text-plugin';
 
 // Experimental Features (May change in minor version bumps, use at your own risk)
 export {default as _MapContext} from './components/map-context';

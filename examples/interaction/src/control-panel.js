@@ -1,7 +1,7 @@
-import React, {PureComponent} from 'react';
+import * as React from 'react';
+import {PureComponent} from 'react';
 
 const camelPattern = /(^|[A-Z])[a-z]*/g;
-const defaultContainer = ({children}) => <div className="control-panel">{children}</div>;
 
 export default class ControlPanel extends PureComponent {
   _formatSettingName(name) {
@@ -73,16 +73,15 @@ export default class ControlPanel extends PureComponent {
   }
 
   render() {
-    const Container = this.props.containerComponent || defaultContainer;
     const {settings, interactionState} = this.props;
 
     return (
-      <Container>
+      <div className="control-panel">
         <h3>Limit Map Interaction</h3>
         <p>Turn interactive features off/on.</p>
         <div className="source-link">
           <a
-            href="https://github.com/uber/react-map-gl/tree/5.0-release/examples/interaction"
+            href="https://github.com/visgl/react-map-gl/tree/5.2-release/examples/interaction"
             target="_new"
           >
             View Code ↗
@@ -95,7 +94,7 @@ export default class ControlPanel extends PureComponent {
         <hr />
 
         {this._renderInteractionStates(interactionState)}
-      </Container>
+      </div>
     );
   }
 }

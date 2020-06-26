@@ -1,25 +1,46 @@
-import React, {Component} from 'react';
+import * as React from 'react';
+import {Component} from 'react';
 import {render} from 'react-dom';
-import MapGL, {Marker, Popup, NavigationControl, FullscreenControl} from 'react-map-gl';
+import MapGL, {
+  Popup,
+  NavigationControl,
+  FullscreenControl,
+  ScaleControl,
+  GeolocateControl
+} from 'react-map-gl';
 
 import ControlPanel from './control-panel';
-import CityPin from './city-pin';
+import Pins from './pins';
 import CityInfo from './city-info';
 
-import CITIES from '../../data/cities.json';
+import CITIES from '../../.data/cities.json';
 
 const TOKEN = ''; // Set your mapbox token here
 
-const fullscreenControlStyle = {
+const geolocateStyle = {
   position: 'absolute',
   top: 0,
   left: 0,
   padding: '10px'
 };
 
-const navStyle = {
+const fullscreenControlStyle = {
   position: 'absolute',
   top: 36,
+  left: 0,
+  padding: '10px'
+};
+
+const navStyle = {
+  position: 'absolute',
+  top: 72,
+  left: 0,
+  padding: '10px'
+};
+
+const scaleControlStyle = {
+  position: 'absolute',
+  bottom: 36,
   left: 0,
   padding: '10px'
 };
@@ -43,12 +64,8 @@ export default class App extends Component {
     this.setState({viewport});
   };
 
-  _renderCityMarker = (city, index) => {
-    return (
-      <Marker key={`marker-${index}`} longitude={city.longitude} latitude={city.latitude}>
-        <CityPin size={20} onClick={() => this.setState({popupInfo: city})} />
-      </Marker>
-    );
+  _onClickMarker = city => {
+    this.setState({popupInfo: city});
   };
 
   _renderPopup() {
@@ -82,15 +99,21 @@ export default class App extends Component {
         onViewportChange={this._updateViewport}
         mapboxApiAccessToken={TOKEN}
       >
-        {CITIES.map(this._renderCityMarker)}
+        <Pins data={CITIES} onClick={this._onClickMarker} />
 
         {this._renderPopup()}
 
-        <div className="fullscreen" style={fullscreenControlStyle}>
+        <div style={geolocateStyle}>
+          <GeolocateControl />
+        </div>
+        <div style={fullscreenControlStyle}>
           <FullscreenControl />
         </div>
-        <div className="nav" style={navStyle}>
+        <div style={navStyle}>
           <NavigationControl />
+        </div>
+        <div style={scaleControlStyle}>
+          <ScaleControl />
         </div>
 
         <ControlPanel containerComponent={this.props.containerComponent} />
