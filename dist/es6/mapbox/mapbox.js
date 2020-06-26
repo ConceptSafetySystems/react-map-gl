@@ -54,7 +54,8 @@ const defaultProps = {
   latitude: 0,
   zoom: 0,
   bearing: 0,
-  pitch: 0
+  pitch: 0,
+  altitude: 1.5
 };
 export function getAccessToken() {
   let accessToken = null;
@@ -71,9 +72,7 @@ export function getAccessToken() {
   return accessToken || 'no-token';
 }
 
-function checkPropTypes(props) {
-  let component = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'component';
-
+function checkPropTypes(props, component = 'component') {
   if (props.debug) {
     PropTypes.checkPropTypes(propTypes, props, 'prop', component);
   }
@@ -343,9 +342,7 @@ export default class Mapbox {
     };
   }
 
-  _checkStyleSheet() {
-    let mapboxVersion = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '0.47.0';
-
+  _checkStyleSheet(mapboxVersion = '0.47.0') {
     if (typeof document === 'undefined') {
       return;
     }

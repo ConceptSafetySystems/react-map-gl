@@ -1,10 +1,11 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 import MapState from '../utils/map-state';
 import { LINEAR_TRANSITION_PROPS } from '../utils/map-controller';
 import deprecateWarn from '../utils/deprecate-warn';
+import { compareVersions } from '../utils/version';
 
 const noop = () => {};
 
@@ -13,16 +14,31 @@ const propTypes = Object.assign({}, BaseControl.propTypes, {
   onViewStateChange: PropTypes.func,
   onViewportChange: PropTypes.func,
   showCompass: PropTypes.bool,
-  showZoom: PropTypes.bool
+  showZoom: PropTypes.bool,
+  zoomInLabel: PropTypes.string,
+  zoomOutLabel: PropTypes.string,
+  compassLabel: PropTypes.string
 });
 const defaultProps = Object.assign({}, BaseControl.defaultProps, {
   className: '',
   showCompass: true,
-  showZoom: true
+  showZoom: true,
+  zoomInLabel: 'Zoom In',
+  zoomOutLabel: 'Zoom Out',
+  compassLabel: 'Reset North'
 });
+const VERSION_LEGACY = 1;
+const VERSION_1_6 = 2;
+
+function getUIVersion(mapboxVersion) {
+  return compareVersions(mapboxVersion, '1.6.0') >= 0 ? VERSION_1_6 : VERSION_LEGACY;
+}
+
 export default class NavigationControl extends BaseControl {
   constructor(props) {
     super(props);
+
+    _defineProperty(this, "_uiVersion", void 0);
 
     _defineProperty(this, "_onZoomIn", () => {
       this._updateViewport({
@@ -64,35 +80,53 @@ export default class NavigationControl extends BaseControl {
     const {
       bearing
     } = this._context.viewport;
-    return createElement('span', {
-      className: 'mapboxgl-ctrl-compass-arrow',
-      style: {
-        transform: "rotate(".concat(-bearing, "deg)")
-      }
+    const style = {
+      transform: "rotate(".concat(-bearing, "deg)")
+    };
+    return this._uiVersion === VERSION_1_6 ? React.createElement("span", {
+      className: "mapboxgl-ctrl-icon",
+      "aria-hidden": "true",
+      style: style
+    }) : React.createElement("span", {
+      className: "mapboxgl-ctrl-compass-arrow",
+      style: style
     });
   }
 
   _renderButton(type, label, callback, children) {
-    return createElement('button', {
+    return React.createElement("button", {
       key: type,
       className: "mapboxgl-ctrl-icon mapboxgl-ctrl-".concat(type),
-      type: 'button',
+      type: "button",
       title: label,
-      onClick: callback,
-      children
-    });
+      onClick: callback
+    }, children || React.createElement("span", {
+      className: "mapboxgl-ctrl-icon",
+      "aria-hidden": "true"
+    }));
   }
 
   _render() {
     const {
       className,
       showCompass,
-      showZoom
+      showZoom,
+      zoomInLabel,
+      zoomOutLabel,
+      compassLabel
     } = this.props;
-    return createElement('div', {
+
+    if (!this._uiVersion) {
+      const {
+        map
+      } = this._context;
+      this._uiVersion = map ? getUIVersion(map.version) : VERSION_1_6;
+    }
+
+    return React.createElement("div", {
       className: "mapboxgl-ctrl mapboxgl-ctrl-group ".concat(className),
       ref: this._containerRef
-    }, [showZoom && this._renderButton('zoom-in', 'Zoom In', this._onZoomIn), showZoom && this._renderButton('zoom-out', 'Zoom Out', this._onZoomOut), showCompass && this._renderButton('compass', 'Reset North', this._onResetNorth, this._renderCompass())]);
+    }, showZoom && this._renderButton('zoom-in', zoomInLabel, this._onZoomIn), showZoom && this._renderButton('zoom-out', zoomOutLabel, this._onZoomOut), showCompass && this._renderButton('compass', compassLabel, this._onResetNorth, this._renderCompass()));
   }
 
 }

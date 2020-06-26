@@ -1,7 +1,8 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import DraggableControl from './draggable-control';
+import { crispPixel } from '../utils/crisp-pixel';
 const propTypes = Object.assign({}, DraggableControl.propTypes, {
   className: PropTypes.string,
   longitude: PropTypes.number.isRequired,
@@ -11,6 +12,12 @@ const defaultProps = Object.assign({}, DraggableControl.defaultProps, {
   className: ''
 });
 export default class Marker extends DraggableControl {
+  constructor(...args) {
+    super(...args);
+
+    _defineProperty(this, "_control", null);
+  }
+
   _getPosition() {
     const {
       longitude,
@@ -35,28 +42,41 @@ export default class Marker extends DraggableControl {
   }
 
   _render() {
-    const {
-      className,
-      draggable
-    } = this.props;
-    const {
-      dragPos
-    } = this.state;
-
     const [x, y] = this._getPosition();
 
-    const containerStyle = {
-      position: 'absolute',
-      left: x,
-      top: y,
-      cursor: draggable ? dragPos ? 'grabbing' : 'grab' : 'auto'
-    };
-    return createElement('div', {
-      className: "mapboxgl-marker ".concat(className),
-      ref: this._containerRef,
-      style: containerStyle,
-      children: this.props.children
-    });
+    const transform = "translate(".concat(crispPixel(x), "px, ").concat(crispPixel(y), "px)");
+    const div = this._containerRef.current;
+
+    if (this._control && div) {
+      div.style.transform = transform;
+    } else {
+      const {
+        className,
+        draggable
+      } = this.props;
+      const {
+        dragPos
+      } = this.state;
+      const containerStyle = {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        transform,
+        cursor: draggable ? dragPos ? 'grabbing' : 'grab' : 'auto'
+      };
+      this._control = React.createElement("div", {
+        className: "mapboxgl-marker ".concat(className),
+        ref: this._containerRef,
+        style: containerStyle
+      }, this.props.children);
+    }
+
+    return this._control;
+  }
+
+  render() {
+    this._control = null;
+    return super.render();
   }
 
 }

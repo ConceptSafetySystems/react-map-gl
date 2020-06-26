@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
@@ -11,23 +13,27 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf3 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
 var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _react = require("react");
+var React = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _baseControl = _interopRequireDefault(require("../components/base-control"));
 
 var _globals = require("../utils/globals");
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 var propTypes = Object.assign({}, _baseControl["default"].propTypes, {
   redraw: _propTypes["default"].func.isRequired
@@ -42,9 +48,9 @@ var defaultProps = {
 var CanvasOverlay = function (_BaseControl) {
   (0, _inherits2["default"])(CanvasOverlay, _BaseControl);
 
-  function CanvasOverlay() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(CanvasOverlay);
 
+  function CanvasOverlay() {
     var _this;
 
     (0, _classCallCheck2["default"])(this, CanvasOverlay);
@@ -53,7 +59,7 @@ var CanvasOverlay = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = (0, _possibleConstructorReturn2["default"])(this, (_getPrototypeOf2 = (0, _getPrototypeOf3["default"])(CanvasOverlay)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_canvas", void 0);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_ctx", void 0);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_redraw", function () {
@@ -107,7 +113,7 @@ var CanvasOverlay = function (_BaseControl) {
 
       this._redraw();
 
-      return (0, _react.createElement)('canvas', {
+      return React.createElement("canvas", {
         ref: this._containerRef,
         width: width * pixelRatio,
         height: height * pixelRatio,

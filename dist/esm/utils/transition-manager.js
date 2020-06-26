@@ -120,7 +120,9 @@ var TransitionManager = function () {
   }, {
     key: "_isTransitionEnabled",
     value: function _isTransitionEnabled(props) {
-      return props.transitionDuration > 0 && Boolean(props.transitionInterpolator);
+      var transitionDuration = props.transitionDuration,
+          transitionInterpolator = props.transitionInterpolator;
+      return (transitionDuration > 0 || transitionDuration === 'auto') && Boolean(transitionInterpolator);
     }
   }, {
     key: "_isUpdateDueToCurrentTransition",
@@ -151,10 +153,17 @@ var TransitionManager = function () {
   }, {
     key: "_triggerTransition",
     value: function _triggerTransition(startProps, endProps) {
-      assert(this._isTransitionEnabled(endProps), 'Transition is not enabled');
+      assert(this._isTransitionEnabled(endProps));
 
       if (this._animationFrame) {
         cancelAnimationFrame(this._animationFrame);
+      }
+
+      var transitionInterpolator = endProps.transitionInterpolator;
+      var duration = transitionInterpolator.getDuration ? transitionInterpolator.getDuration(startProps, endProps) : endProps.transitionDuration;
+
+      if (duration === 0) {
+        return;
       }
 
       var initialProps = endProps.transitionInterpolator.initializeProps(startProps, endProps);
@@ -165,7 +174,7 @@ var TransitionManager = function () {
         isRotating: startProps.bearing !== endProps.bearing || startProps.pitch !== endProps.pitch
       };
       this.state = {
-        duration: endProps.transitionDuration,
+        duration: duration,
         easing: endProps.transitionEasing,
         interpolator: endProps.transitionInterpolator,
         interruption: endProps.transitionInterruption,

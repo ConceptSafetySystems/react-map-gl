@@ -1,11 +1,18 @@
+import _extends from "@babel/runtime/helpers/esm/extends";
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { PureComponent, createElement, createRef } from 'react';
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
+import { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import StaticMap from './static-map';
 import { MAPBOX_LIMITS } from '../utils/map-state';
@@ -23,7 +30,7 @@ var propTypes = Object.assign({}, StaticMap.propTypes, {
   onViewStateChange: PropTypes.func,
   onViewportChange: PropTypes.func,
   onInteractionStateChange: PropTypes.func,
-  transitionDuration: PropTypes.number,
+  transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   transitionInterpolator: PropTypes.object,
   transitionInterruption: PropTypes.number,
   transitionEasing: PropTypes.func,
@@ -88,6 +95,8 @@ var defaultProps = Object.assign({}, StaticMap.defaultProps, MAPBOX_LIMITS, Tran
 var InteractiveMap = function (_PureComponent) {
   _inherits(InteractiveMap, _PureComponent);
 
+  var _super = _createSuper(InteractiveMap);
+
   _createClass(InteractiveMap, null, [{
     key: "supported",
     value: function supported() {
@@ -100,7 +109,7 @@ var InteractiveMap = function (_PureComponent) {
 
     _classCallCheck(this, InteractiveMap);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(InteractiveMap).call(this, props));
+    _this = _super.call(this, props);
 
     _defineProperty(_assertThisInitialized(_this), "state", {
       isLoaded: false,
@@ -139,6 +148,10 @@ var InteractiveMap = function (_PureComponent) {
           isDragging = _interactionState$isD === void 0 ? false : _interactionState$isD;
 
       if (isDragging !== _this.state.isDragging) {
+        _this._updateInteractiveContext({
+          isDragging: isDragging
+        });
+
         _this.setState({
           isDragging: isDragging
         });
@@ -358,15 +371,14 @@ var InteractiveMap = function (_PureComponent) {
       });
     }
   }, {
-    key: "componentWillUpdate",
-    value: function componentWillUpdate(nextProps, nextState) {
-      this._setControllerProps(nextProps);
-
-      if (nextState.isDragging !== this.state.isDragging) {
-        this._updateInteractiveContext({
-          isDragging: nextState.isDragging
-        });
-      }
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      this._setControllerProps(this.props);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      this._eventManager.destroy();
     }
   }, {
     key: "_setControllerProps",
@@ -382,10 +394,9 @@ var InteractiveMap = function (_PureComponent) {
 
       this._controller.setOptions(props);
 
-      this._updateInteractiveContext({
-        onViewStateChange: props.onViewStateChange,
-        onViewportChange: props.onViewportChange
-      });
+      var context = this._interactiveContext;
+      context.onViewportChange = props.onViewportChange;
+      context.onViewStateChange = props.onViewStateChange;
     }
   }, {
     key: "_getFeatures",
@@ -449,21 +460,20 @@ var InteractiveMap = function (_PureComponent) {
         height: height,
         cursor: getCursor(this.state)
       });
-      return createElement(MapContext.Provider, {
+      return React.createElement(MapContext.Provider, {
         value: this._interactiveContext
-      }, createElement('div', {
-        key: 'event-canvas',
+      }, React.createElement("div", {
+        key: "event-canvas",
         ref: this._eventCanvasRef,
         style: eventCanvasStyle
-      }, createElement(StaticMap, Object.assign({}, this.props, {
-        width: '100%',
-        height: '100%',
+      }, React.createElement(StaticMap, _extends({}, this.props, {
+        width: "100%",
+        height: "100%",
         style: null,
         onResize: this._onResize,
         onLoad: this._onLoad,
-        ref: this._staticMapRef,
-        children: this.props.children
-      }))));
+        ref: this._staticMapRef
+      }), this.props.children)));
     }
   }]);
 

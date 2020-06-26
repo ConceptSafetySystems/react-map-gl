@@ -1,5 +1,5 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from '../components/base-control';
 import { window } from '../utils/globals';
@@ -13,8 +13,8 @@ const defaultProps = {
   captureDoubleClick: false
 };
 export default class CanvasOverlay extends BaseControl {
-  constructor() {
-    super(...arguments);
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "_canvas", void 0);
 
@@ -69,7 +69,7 @@ export default class CanvasOverlay extends BaseControl {
 
     this._redraw();
 
-    return createElement('canvas', {
+    return React.createElement("canvas", {
       ref: this._containerRef,
       width: width * pixelRatio,
       height: height * pixelRatio,

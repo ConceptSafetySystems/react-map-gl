@@ -2,7 +2,7 @@ import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
 import { document } from '../utils/globals';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
-import { createElement } from 'react';
+import * as React from 'react';
 import mapboxgl from '../utils/mapboxgl';
 const propTypes = Object.assign({}, BaseControl.propTypes, {
   className: PropTypes.string,
@@ -13,8 +13,8 @@ const defaultProps = Object.assign({}, BaseControl.defaultProps, {
   container: null
 });
 export default class FullscreenControl extends BaseControl {
-  constructor() {
-    super(...arguments);
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "state", {
       isFullscreen: false,
@@ -52,13 +52,16 @@ export default class FullscreenControl extends BaseControl {
   }
 
   _renderButton(type, label, callback) {
-    return createElement('button', {
+    return React.createElement("button", {
       key: type,
       className: "mapboxgl-ctrl-icon mapboxgl-ctrl-".concat(type),
-      type: 'button',
+      type: "button",
       title: label,
       onClick: callback
-    });
+    }, React.createElement("span", {
+      className: "mapboxgl-ctrl-icon",
+      "aria-hidden": "true"
+    }));
   }
 
   _render() {
@@ -73,10 +76,10 @@ export default class FullscreenControl extends BaseControl {
       isFullscreen
     } = this.state;
     const type = isFullscreen ? 'shrink' : 'fullscreen';
-    return createElement('div', {
+    return React.createElement("div", {
       className: "mapboxgl-ctrl mapboxgl-ctrl-group ".concat(className),
       ref: this._containerRef
-    }, [this._renderButton(type, 'Toggle fullscreen', this._onClickFullscreen)]);
+    }, this._renderButton(type, 'Toggle fullscreen', this._onClickFullscreen));
   }
 
 }

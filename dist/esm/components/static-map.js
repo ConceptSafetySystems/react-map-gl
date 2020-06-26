@@ -1,11 +1,21 @@
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { PureComponent, createElement, createRef } from 'react';
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
+import { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { normalizeStyle } from '../utils/style-utils';
 import WebMercatorViewport from 'viewport-mercator-project';
@@ -15,7 +25,7 @@ import mapboxgl from '../utils/mapboxgl';
 import { checkVisibilityConstraints } from '../utils/map-constraints';
 import { MAPBOX_LIMITS } from '../utils/map-state';
 import MapContext from './map-context';
-var TOKEN_DOC_URL = 'https://uber.github.io/react-map-gl/#/Documentation/getting-started/about-mapbox-tokens';
+var TOKEN_DOC_URL = 'https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens';
 var NO_TOKEN_WARNING = 'A valid API access token is required to use Mapbox data';
 
 function noop() {}
@@ -51,9 +61,9 @@ var defaultProps = Object.assign({}, Mapbox.defaultProps, {
 var StaticMap = function (_PureComponent) {
   _inherits(StaticMap, _PureComponent);
 
-  function StaticMap() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(StaticMap);
 
+  function StaticMap() {
     var _this;
 
     _classCallCheck(this, StaticMap);
@@ -62,7 +72,7 @@ var StaticMap = function (_PureComponent) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(StaticMap)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
       accessTokenInvalid: false
@@ -161,7 +171,7 @@ var StaticMap = function (_PureComponent) {
       var mapStyle = newProps.mapStyle;
       var oldMapStyle = oldProps.mapStyle;
 
-      if (mapStyle !== oldMapStyle) {
+      if (mapStyle !== oldMapStyle && mapStyle) {
         this._map.setStyle(normalizeStyle(mapStyle), {
           diff: !this.props.preventStyleDiffing
         });
@@ -188,18 +198,18 @@ var StaticMap = function (_PureComponent) {
           left: 0,
           top: 0
         };
-        return createElement('div', {
-          key: 'warning',
-          id: 'no-token-warning',
+        return React.createElement("div", {
+          key: "warning",
+          id: "no-token-warning",
           style: style
-        }, [createElement('h3', {
-          key: 'header'
-        }, NO_TOKEN_WARNING), createElement('div', {
-          key: 'text'
-        }, 'For information on setting up your basemap, read'), createElement('a', {
-          key: 'link',
+        }, React.createElement("h3", {
+          key: "header"
+        }, "NO_TOKEN_WARNING"), React.createElement("div", {
+          key: "text"
+        }, "For information on setting up your basemap, read"), React.createElement("a", {
+          key: "link",
           href: TOKEN_DOC_URL
-        }, 'Note on Map Tokens')]);
+        }, "Note on Map Tokens"));
       }
 
       return null;
@@ -216,23 +226,23 @@ var StaticMap = function (_PureComponent) {
 
       this._updateMapSize(width, height);
 
-      return createElement(MapContext.Consumer, null, function (interactiveContext) {
-        var context = Object.assign({}, interactiveContext, {
-          viewport: new WebMercatorViewport(Object.assign({}, _this2.props, _this2.props.viewState, {
+      return React.createElement(MapContext.Consumer, null, function (interactiveContext) {
+        var context = _objectSpread(_objectSpread({}, interactiveContext), {}, {
+          viewport: new WebMercatorViewport(_objectSpread(_objectSpread(_objectSpread({}, _this2.props), _this2.props.viewState), {}, {
             width: width,
             height: height
           })),
           map: _this2._map,
           mapContainer: interactiveContext.mapContainer || _this2._mapContainerRef.current
         });
-        return createElement(MapContext.Provider, {
+
+        return React.createElement(MapContext.Provider, {
           value: context
-        }, createElement('div', {
-          key: 'map-overlays',
-          className: 'overlays',
-          style: CONTAINER_STYLE,
-          children: _this2.props.children
-        }));
+        }, React.createElement("div", {
+          key: "map-overlays",
+          className: "overlays",
+          style: CONTAINER_STYLE
+        }, _this2.props.children));
       });
     }
   }, {
@@ -254,22 +264,21 @@ var StaticMap = function (_PureComponent) {
       var mapStyle = Object.assign({}, CONTAINER_STYLE, {
         visibility: visible ? 'inherit' : 'hidden'
       });
-      return createElement('div', {
-        key: 'map-container',
+      return React.createElement("div", {
+        key: "map-container",
         style: mapContainerStyle,
-        ref: this._mapContainerRef,
-        children: [createElement('div', {
-          key: 'map-mapbox',
-          ref: this._mapboxMapRef,
-          style: mapStyle,
-          className: className
-        }), createElement(AutoSizer, {
-          key: 'autosizer',
-          disableWidth: Number.isFinite(width),
-          disableHeight: Number.isFinite(height),
-          onResize: this.props.onResize
-        }, this._renderOverlays.bind(this)), this._renderNoTokenWarning()]
-      });
+        ref: this._mapContainerRef
+      }, React.createElement("div", {
+        key: "map-mapbox",
+        ref: this._mapboxMapRef,
+        style: mapStyle,
+        className: className
+      }), React.createElement(AutoSizer, {
+        key: "autosizer",
+        disableWidth: Number.isFinite(width),
+        disableHeight: Number.isFinite(height),
+        onResize: this.props.onResize
+      }, this._renderOverlays.bind(this)), this._renderNoTokenWarning());
     }
   }], [{
     key: "supported",

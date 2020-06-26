@@ -6,8 +6,7 @@ import { isValid, getEndValueByShortestPath } from './transition-utils';
 import { lerp } from '../math-utils';
 const VIEWPORT_TRANSITION_PROPS = ['longitude', 'latitude', 'zoom', 'bearing', 'pitch'];
 export default class LinearInterpolator extends TransitionInterpolator {
-  constructor() {
-    let opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  constructor(opts = {}) {
     super();
 
     _defineProperty(this, "around", void 0);

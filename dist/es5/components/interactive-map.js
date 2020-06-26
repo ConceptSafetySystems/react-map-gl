@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
@@ -7,11 +9,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
+
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
-
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
 var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
@@ -19,9 +19,13 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _react = require("react");
+var React = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
@@ -41,6 +45,10 @@ var _mapController = _interopRequireDefault(require("../utils/map-controller"));
 
 var _deprecateWarn = _interopRequireDefault(require("../utils/deprecate-warn"));
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 var propTypes = Object.assign({}, _staticMap["default"].propTypes, {
   maxZoom: _propTypes["default"].number,
   minZoom: _propTypes["default"].number,
@@ -49,7 +57,7 @@ var propTypes = Object.assign({}, _staticMap["default"].propTypes, {
   onViewStateChange: _propTypes["default"].func,
   onViewportChange: _propTypes["default"].func,
   onInteractionStateChange: _propTypes["default"].func,
-  transitionDuration: _propTypes["default"].number,
+  transitionDuration: _propTypes["default"].oneOfType([_propTypes["default"].number, _propTypes["default"].string]),
   transitionInterpolator: _propTypes["default"].object,
   transitionInterruption: _propTypes["default"].number,
   transitionEasing: _propTypes["default"].func,
@@ -113,6 +121,9 @@ var defaultProps = Object.assign({}, _staticMap["default"].defaultProps, _mapSta
 
 var InteractiveMap = function (_PureComponent) {
   (0, _inherits2["default"])(InteractiveMap, _PureComponent);
+
+  var _super = _createSuper(InteractiveMap);
+
   (0, _createClass2["default"])(InteractiveMap, null, [{
     key: "supported",
     value: function supported() {
@@ -124,7 +135,7 @@ var InteractiveMap = function (_PureComponent) {
     var _this;
 
     (0, _classCallCheck2["default"])(this, InteractiveMap);
-    _this = (0, _possibleConstructorReturn2["default"])(this, (0, _getPrototypeOf2["default"])(InteractiveMap).call(this, props));
+    _this = _super.call(this, props);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "state", {
       isLoaded: false,
       isDragging: false,
@@ -135,8 +146,8 @@ var InteractiveMap = function (_PureComponent) {
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_interactiveContext", void 0);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_width", 0);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_height", 0);
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_eventCanvasRef", (0, _react.createRef)());
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_staticMapRef", (0, _react.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_eventCanvasRef", (0, React.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_staticMapRef", (0, React.createRef)());
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "getMap", function () {
       return _this._staticMapRef.current ? _this._staticMapRef.current.getMap() : null;
     });
@@ -152,6 +163,10 @@ var InteractiveMap = function (_PureComponent) {
           isDragging = _interactionState$isD === void 0 ? false : _interactionState$isD;
 
       if (isDragging !== _this.state.isDragging) {
+        _this._updateInteractiveContext({
+          isDragging: isDragging
+        });
+
         _this.setState({
           isDragging: isDragging
         });
@@ -362,15 +377,14 @@ var InteractiveMap = function (_PureComponent) {
       });
     }
   }, {
-    key: "componentWillUpdate",
-    value: function componentWillUpdate(nextProps, nextState) {
-      this._setControllerProps(nextProps);
-
-      if (nextState.isDragging !== this.state.isDragging) {
-        this._updateInteractiveContext({
-          isDragging: nextState.isDragging
-        });
-      }
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      this._setControllerProps(this.props);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      this._eventManager.destroy();
     }
   }, {
     key: "_setControllerProps",
@@ -386,10 +400,9 @@ var InteractiveMap = function (_PureComponent) {
 
       this._controller.setOptions(props);
 
-      this._updateInteractiveContext({
-        onViewStateChange: props.onViewStateChange,
-        onViewportChange: props.onViewportChange
-      });
+      var context = this._interactiveContext;
+      context.onViewportChange = props.onViewportChange;
+      context.onViewStateChange = props.onViewStateChange;
     }
   }, {
     key: "_getFeatures",
@@ -453,25 +466,24 @@ var InteractiveMap = function (_PureComponent) {
         height: height,
         cursor: getCursor(this.state)
       });
-      return (0, _react.createElement)(_mapContext["default"].Provider, {
+      return React.createElement(_mapContext["default"].Provider, {
         value: this._interactiveContext
-      }, (0, _react.createElement)('div', {
-        key: 'event-canvas',
+      }, React.createElement("div", {
+        key: "event-canvas",
         ref: this._eventCanvasRef,
         style: eventCanvasStyle
-      }, (0, _react.createElement)(_staticMap["default"], Object.assign({}, this.props, {
-        width: '100%',
-        height: '100%',
+      }, React.createElement(_staticMap["default"], (0, _extends2["default"])({}, this.props, {
+        width: "100%",
+        height: "100%",
         style: null,
         onResize: this._onResize,
         onLoad: this._onLoad,
-        ref: this._staticMapRef,
-        children: this.props.children
-      }))));
+        ref: this._staticMapRef
+      }), this.props.children)));
     }
   }]);
   return InteractiveMap;
-}(_react.PureComponent);
+}(React.PureComponent);
 
 exports["default"] = InteractiveMap;
 (0, _defineProperty2["default"])(InteractiveMap, "propTypes", propTypes);

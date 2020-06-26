@@ -1,11 +1,17 @@
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement, createRef } from 'react';
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
+import { createRef } from 'react';
 import PropTypes from 'prop-types';
 import WebMercatorViewport from 'viewport-mercator-project';
 import mapboxgl from '../utils/mapboxgl';
@@ -23,28 +29,34 @@ var noop = function noop() {};
 var propTypes = Object.assign({}, BaseControl.propTypes, {
   className: PropTypes.string,
   style: PropTypes.object,
+  label: PropTypes.string,
+  auto: PropTypes.bool,
   positionOptions: PropTypes.object,
   fitBoundsOptions: PropTypes.object,
   trackUserLocation: PropTypes.bool,
   showUserLocation: PropTypes.bool,
   onViewStateChange: PropTypes.func,
-  onViewportChange: PropTypes.func
+  onViewportChange: PropTypes.func,
+  onGeolocate: PropTypes.func
 });
 var defaultProps = Object.assign({}, BaseControl.defaultProps, {
   className: '',
   style: {},
+  label: 'Geolocate',
+  auto: false,
   positionOptions: null,
   fitBoundsOptions: null,
   trackUserLocation: false,
-  showUserLocation: true
+  showUserLocation: true,
+  onGeolocate: function onGeolocate() {}
 });
 
 var GeolocateControl = function (_BaseControl) {
   _inherits(GeolocateControl, _BaseControl);
 
-  function GeolocateControl() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(GeolocateControl);
 
+  function GeolocateControl() {
     var _this;
 
     _classCallCheck(this, GeolocateControl);
@@ -53,7 +65,7 @@ var GeolocateControl = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GeolocateControl)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
       supportsGeolocation: false,
@@ -64,29 +76,58 @@ var GeolocateControl = function (_BaseControl) {
 
     _defineProperty(_assertThisInitialized(_this), "_geolocateButtonRef", createRef());
 
-    _defineProperty(_assertThisInitialized(_this), "_markerRef", createRef());
-
     _defineProperty(_assertThisInitialized(_this), "_setupMapboxGeolocateControl", function (supportsGeolocation) {
       if (!supportsGeolocation) {
         console.warn('Geolocation support is not available, the GeolocateControl will not be visible.');
         return;
       }
 
-      var controlOptions = {};
-      ['positionOptions', 'fitBoundsOptions', 'trackUserLocation', 'showUserLocation'].forEach(function (prop) {
+      var controlOptions = {
+        showUserLocation: false
+      };
+      ['positionOptions', 'fitBoundsOptions', 'trackUserLocation'].forEach(function (prop) {
         if (prop in _this.props && _this.props[prop] !== null) {
           controlOptions[prop] = _this.props[prop];
         }
       });
-      _this._mapboxGeolocateControl = new mapboxgl.GeolocateControl(controlOptions);
-      _this._mapboxGeolocateControl._watchState = 'OFF';
-      _this._mapboxGeolocateControl._geolocateButton = _this._geolocateButtonRef.current;
-      _this._mapboxGeolocateControl._updateMarker = _this._updateMarker;
-      _this._mapboxGeolocateControl._updateCamera = _this._updateCamera;
-      _this._mapboxGeolocateControl._setup = true;
+      var control = new mapboxgl.GeolocateControl(controlOptions);
+      _this._mapboxGeolocateControl = control;
+      control._watchState = 'OFF';
+      control._geolocateButton = _this._geolocateButtonRef.current;
+
+      if (control.options.trackUserLocation && control._geolocateButton) {
+        control._geolocateButton.setAttribute('aria-pressed', 'false');
+      }
+
+      control._updateMarker = _this._updateMarker;
+      control._updateCamera = _this._updateCamera;
+      control._setup = true;
+      var eventManager = _this._context.eventManager;
+
+      if (control.options.trackUserLocation && eventManager) {
+        eventManager.on('panstart', function () {
+          if (control._watchState === 'ACTIVE_LOCK') {
+            control._watchState = 'BACKGROUND';
+
+            control._geolocateButton.classList.add('mapboxgl-ctrl-geolocate-background');
+
+            control._geolocateButton.classList.remove('mapboxgl-ctrl-geolocate-active');
+          }
+        });
+      }
+
+      control.on('geolocate', _this.props.onGeolocate);
     });
 
-    _defineProperty(_assertThisInitialized(_this), "_onClickGeolocate", function () {
+    _defineProperty(_assertThisInitialized(_this), "_triggerGeolocate", function () {
+      var control = _this._mapboxGeolocateControl;
+      control._map = _this._context.map;
+
+      if (_this.props.showUserLocation) {
+        control.on('geolocate', _this._updateMarker);
+        control.on('trackuserlocationend', _this._updateMarker);
+      }
+
       return _this._mapboxGeolocateControl.trigger();
     });
 
@@ -110,10 +151,10 @@ var GeolocateControl = function (_BaseControl) {
 
       var bounds = _this._getBounds(position);
 
-      var _fitBounds = new WebMercatorViewport(viewport).fitBounds(bounds),
-          longitude = _fitBounds.longitude,
-          latitude = _fitBounds.latitude,
-          zoom = _fitBounds.zoom;
+      var _WebMercatorViewport$ = new WebMercatorViewport(viewport).fitBounds(bounds),
+          longitude = _WebMercatorViewport$.longitude,
+          latitude = _WebMercatorViewport$.latitude,
+          zoom = _WebMercatorViewport$.zoom;
 
       var newViewState = Object.assign({}, viewport, {
         longitude: longitude,
@@ -131,28 +172,30 @@ var GeolocateControl = function (_BaseControl) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "_renderButton", function (type, label, callback) {
-      return createElement('button', {
+      return React.createElement("button", {
         key: type,
         className: "mapboxgl-ctrl-icon mapboxgl-ctrl-".concat(type),
         ref: _this._geolocateButtonRef,
-        type: 'button',
+        type: "button",
         title: label,
         onClick: callback
-      });
+      }, React.createElement("span", {
+        className: "mapboxgl-ctrl-icon",
+        "aria-hidden": "true"
+      }));
     });
 
     _defineProperty(_assertThisInitialized(_this), "_renderMarker", function () {
-      var showUserLocation = _this.props.showUserLocation;
       var markerPosition = _this.state.markerPosition;
+      var showUserLocation = _this.props.showUserLocation;
 
-      if (!showUserLocation || !markerPosition) {
+      if (!markerPosition || !showUserLocation) {
         return null;
       }
 
-      return createElement(Marker, {
-        key: 'location-maker',
-        ref: _this._markerRef,
-        className: 'mapboxgl-user-location-dot',
+      return React.createElement(Marker, {
+        key: "location-maker",
+        className: "mapboxgl-user-location-dot",
         longitude: markerPosition.longitude,
         latitude: markerPosition.latitude,
         onContextMenu: function onContextMenu(e) {
@@ -177,25 +220,29 @@ var GeolocateControl = function (_BaseControl) {
         });
 
         _this2._setupMapboxGeolocateControl(result);
+
+        if (result && _this2.props.auto) {
+          _this2._triggerGeolocate();
+        }
       });
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
-      var markerRef = this._markerRef.current;
-
-      if (this._mapboxGeolocateControl && markerRef) {
-        this._mapboxGeolocateControl._dotElement = markerRef._containerRef.current;
+    value: function componentDidUpdate(prevProps) {
+      if (this.state.supportsGeolocation && !prevProps.auto && this.props.auto) {
+        this._triggerGeolocate();
       }
     }
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
-      var geolocationWatchID = this._mapboxGeolocateControl._geolocationWatchID;
+      if (this._mapboxGeolocateControl) {
+        var geolocationWatchID = this._mapboxGeolocateControl._geolocationWatchID;
 
-      if (geolocationWatchID !== undefined) {
-        window.navigator.geolocation.clearWatch(geolocationWatchID);
-        this._mapboxGeolocateControl._geolocationWatchID = undefined;
+        if (geolocationWatchID !== undefined) {
+          window.navigator.geolocation.clearWatch(geolocationWatchID);
+          this._mapboxGeolocateControl._geolocationWatchID = undefined;
+        }
       }
     }
   }, {
@@ -207,16 +254,17 @@ var GeolocateControl = function (_BaseControl) {
 
       var _this$props = this.props,
           className = _this$props.className,
-          style = _this$props.style;
-      return createElement('div', null, [this._renderMarker(), createElement('div', {
-        key: 'geolocate-control',
+          style = _this$props.style,
+          label = _this$props.label;
+      return React.createElement("div", null, this._renderMarker(), React.createElement("div", {
+        key: "geolocate-control",
         className: "mapboxgl-ctrl mapboxgl-ctrl-group ".concat(className),
         ref: this._containerRef,
         style: style,
         onContextMenu: function onContextMenu(e) {
           return e.preventDefault();
         }
-      }, this._renderButton('geolocate', 'Geolocate', this._onClickGeolocate))]);
+      }, this._renderButton('geolocate', label, this._triggerGeolocate)));
     }
   }]);
 

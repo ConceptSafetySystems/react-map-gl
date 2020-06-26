@@ -1,5 +1,6 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { PureComponent, createElement, createRef } from 'react';
+import * as React from 'react';
+import { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import MapContext from './map-context';
 const propTypes = {
@@ -15,8 +16,8 @@ const defaultProps = {
   captureDoubleClick: true
 };
 export default class BaseControl extends PureComponent {
-  constructor() {
-    super(...arguments);
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "_context", {});
 
@@ -68,7 +69,7 @@ export default class BaseControl extends PureComponent {
         click: this._onClick,
         dblclick: this._onDblClick
       };
-      eventManager.on(this._events, ref);
+      eventManager.watch(this._events, ref);
     }
   }
 
@@ -87,7 +88,7 @@ export default class BaseControl extends PureComponent {
   }
 
   render() {
-    return createElement(MapContext.Consumer, null, context => {
+    return React.createElement(MapContext.Consumer, null, context => {
       this._context = context;
       return this._render();
     });

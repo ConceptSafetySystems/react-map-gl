@@ -5,6 +5,7 @@ import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
 import MapState from './map-state';
 import { LinearInterpolator } from './transition';
 import TransitionManager, { TRANSITION_EVENTS } from './transition-manager';
+import debounce from './debounce';
 var NO_TRANSITION_PROPS = {
   transitionDuration: 0
 };
@@ -22,7 +23,7 @@ var ZOOM_ACCEL = 0.01;
 var EVENT_TYPES = {
   WHEEL: ['wheel'],
   PAN: ['panstart', 'panmove', 'panend'],
-  PINCH: ['pinchstart', 'pinchmove', 'pinchend'],
+  PINCH: ['pinchstart', 'pinchmove', 'pinchend', 'pinchcancel'],
   DOUBLE_TAP: ['doubletap'],
   KEYBOARD: ['keydown']
 };
@@ -76,6 +77,7 @@ var MapController = function () {
     });
 
     this.handleEvent = this.handleEvent.bind(this);
+    this._onWheelEnd = debounce(this._onWheelEnd, 100);
   }
 
   _createClass(MapController, [{
@@ -99,6 +101,7 @@ var MapController = function () {
         case 'pinchmove':
           return this._onPinch(event);
 
+        case 'pinchcancel':
         case 'pinchend':
           return this._onPinchEnd(event);
 
@@ -176,12 +179,12 @@ var MapController = function () {
           keyboard = _options$keyboard === void 0 ? this.keyboard : _options$keyboard;
       this.onViewportChange = onViewportChange;
       this.onStateChange = onStateChange;
+      var dimensionChanged = !this.mapStateProps || this.mapStateProps.height !== options.height;
+      this.mapStateProps = options;
 
-      if (!this.mapStateProps || this.mapStateProps.height !== options.height) {
+      if (dimensionChanged) {
         this.updateViewport(new MapState(options));
       }
-
-      this.mapStateProps = options;
 
       this._transitionManager.processViewportChange(Object.assign({}, options, {
         onStateChange: this.setState
@@ -337,10 +340,17 @@ var MapController = function () {
       this.updateViewport(newMapState, NO_TRANSITION_PROPS, {
         isZooming: true
       });
+
+      this._onWheelEnd();
+
+      return true;
+    }
+  }, {
+    key: "_onWheelEnd",
+    value: function _onWheelEnd() {
       this.setState({
         isZooming: false
       });
-      return true;
     }
   }, {
     key: "_onPinchStart",
@@ -421,7 +431,9 @@ var MapController = function () {
         transitionInterpolator: new LinearInterpolator({
           around: pos
         })
-      }));
+      }), {
+        isZooming: true
+      });
       return true;
     }
   }, {

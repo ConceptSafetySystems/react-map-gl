@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
@@ -11,17 +13,17 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf3 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
 var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _react = require("react");
+var React = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
@@ -41,7 +43,15 @@ var _mapState = require("../utils/map-state");
 
 var _mapContext = _interopRequireDefault(require("./map-context"));
 
-var TOKEN_DOC_URL = 'https://uber.github.io/react-map-gl/#/Documentation/getting-started/about-mapbox-tokens';
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+var TOKEN_DOC_URL = 'https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens';
 var NO_TOKEN_WARNING = 'A valid API access token is required to use Mapbox data';
 
 function noop() {}
@@ -77,9 +87,9 @@ var defaultProps = Object.assign({}, _mapbox["default"].defaultProps, {
 var StaticMap = function (_PureComponent) {
   (0, _inherits2["default"])(StaticMap, _PureComponent);
 
-  function StaticMap() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(StaticMap);
 
+  function StaticMap() {
     var _this;
 
     (0, _classCallCheck2["default"])(this, StaticMap);
@@ -88,14 +98,14 @@ var StaticMap = function (_PureComponent) {
       args[_key] = arguments[_key];
     }
 
-    _this = (0, _possibleConstructorReturn2["default"])(this, (_getPrototypeOf2 = (0, _getPrototypeOf3["default"])(StaticMap)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "state", {
       accessTokenInvalid: false
     });
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_mapbox", null);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_map", null);
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_mapboxMapRef", (0, _react.createRef)());
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_mapContainerRef", (0, _react.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_mapboxMapRef", (0, React.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_mapContainerRef", (0, React.createRef)());
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_queryParams", {});
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_width", 0);
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_height", 0);
@@ -175,7 +185,7 @@ var StaticMap = function (_PureComponent) {
       var mapStyle = newProps.mapStyle;
       var oldMapStyle = oldProps.mapStyle;
 
-      if (mapStyle !== oldMapStyle) {
+      if (mapStyle !== oldMapStyle && mapStyle) {
         this._map.setStyle((0, _styleUtils.normalizeStyle)(mapStyle), {
           diff: !this.props.preventStyleDiffing
         });
@@ -202,18 +212,18 @@ var StaticMap = function (_PureComponent) {
           left: 0,
           top: 0
         };
-        return (0, _react.createElement)('div', {
-          key: 'warning',
-          id: 'no-token-warning',
+        return React.createElement("div", {
+          key: "warning",
+          id: "no-token-warning",
           style: style
-        }, [(0, _react.createElement)('h3', {
-          key: 'header'
-        }, NO_TOKEN_WARNING), (0, _react.createElement)('div', {
-          key: 'text'
-        }, 'For information on setting up your basemap, read'), (0, _react.createElement)('a', {
-          key: 'link',
+        }, React.createElement("h3", {
+          key: "header"
+        }, "NO_TOKEN_WARNING"), React.createElement("div", {
+          key: "text"
+        }, "For information on setting up your basemap, read"), React.createElement("a", {
+          key: "link",
           href: TOKEN_DOC_URL
-        }, 'Note on Map Tokens')]);
+        }, "Note on Map Tokens"));
       }
 
       return null;
@@ -230,23 +240,23 @@ var StaticMap = function (_PureComponent) {
 
       this._updateMapSize(width, height);
 
-      return (0, _react.createElement)(_mapContext["default"].Consumer, null, function (interactiveContext) {
-        var context = Object.assign({}, interactiveContext, {
-          viewport: new _viewportMercatorProject["default"](Object.assign({}, _this2.props, _this2.props.viewState, {
+      return React.createElement(_mapContext["default"].Consumer, null, function (interactiveContext) {
+        var context = _objectSpread(_objectSpread({}, interactiveContext), {}, {
+          viewport: new _viewportMercatorProject["default"](_objectSpread(_objectSpread(_objectSpread({}, _this2.props), _this2.props.viewState), {}, {
             width: width,
             height: height
           })),
           map: _this2._map,
           mapContainer: interactiveContext.mapContainer || _this2._mapContainerRef.current
         });
-        return (0, _react.createElement)(_mapContext["default"].Provider, {
+
+        return React.createElement(_mapContext["default"].Provider, {
           value: context
-        }, (0, _react.createElement)('div', {
-          key: 'map-overlays',
-          className: 'overlays',
-          style: CONTAINER_STYLE,
-          children: _this2.props.children
-        }));
+        }, React.createElement("div", {
+          key: "map-overlays",
+          className: "overlays",
+          style: CONTAINER_STYLE
+        }, _this2.props.children));
       });
     }
   }, {
@@ -268,22 +278,21 @@ var StaticMap = function (_PureComponent) {
       var mapStyle = Object.assign({}, CONTAINER_STYLE, {
         visibility: visible ? 'inherit' : 'hidden'
       });
-      return (0, _react.createElement)('div', {
-        key: 'map-container',
+      return React.createElement("div", {
+        key: "map-container",
         style: mapContainerStyle,
-        ref: this._mapContainerRef,
-        children: [(0, _react.createElement)('div', {
-          key: 'map-mapbox',
-          ref: this._mapboxMapRef,
-          style: mapStyle,
-          className: className
-        }), (0, _react.createElement)(_reactVirtualizedAutoSizer["default"], {
-          key: 'autosizer',
-          disableWidth: Number.isFinite(width),
-          disableHeight: Number.isFinite(height),
-          onResize: this.props.onResize
-        }, this._renderOverlays.bind(this)), this._renderNoTokenWarning()]
-      });
+        ref: this._mapContainerRef
+      }, React.createElement("div", {
+        key: "map-mapbox",
+        ref: this._mapboxMapRef,
+        style: mapStyle,
+        className: className
+      }), React.createElement(_reactVirtualizedAutoSizer["default"], {
+        key: "autosizer",
+        disableWidth: Number.isFinite(width),
+        disableHeight: Number.isFinite(height),
+        onResize: this.props.onResize
+      }, this._renderOverlays.bind(this)), this._renderNoTokenWarning());
     }
   }], [{
     key: "supported",
@@ -292,7 +301,7 @@ var StaticMap = function (_PureComponent) {
     }
   }]);
   return StaticMap;
-}(_react.PureComponent);
+}(React.PureComponent);
 
 exports["default"] = StaticMap;
 (0, _defineProperty2["default"])(StaticMap, "propTypes", propTypes);

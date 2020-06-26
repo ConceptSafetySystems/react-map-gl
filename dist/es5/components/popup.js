@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
@@ -13,25 +15,31 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
 var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
-
-var _getPrototypeOf3 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
 var _get2 = _interopRequireDefault(require("@babel/runtime/helpers/get"));
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _react = require("react");
+var React = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _baseControl = _interopRequireDefault(require("./base-control"));
 
 var _dynamicPosition = require("../utils/dynamic-position");
+
+var _crispPixel = require("../utils/crisp-pixel");
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 var propTypes = Object.assign({}, _baseControl["default"].propTypes, {
   className: _propTypes["default"].string,
@@ -65,9 +73,9 @@ var defaultProps = Object.assign({}, _baseControl["default"].defaultProps, {
 var Popup = function (_BaseControl) {
   (0, _inherits2["default"])(Popup, _BaseControl);
 
-  function Popup() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(Popup);
 
+  function Popup() {
     var _this;
 
     (0, _classCallCheck2["default"])(this, Popup);
@@ -76,16 +84,24 @@ var Popup = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = (0, _possibleConstructorReturn2["default"])(this, (_getPrototypeOf2 = (0, _getPrototypeOf3["default"])(Popup)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_closeOnClick", false);
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_contentRef", (0, _react.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_contentRef", (0, React.createRef)());
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_onClick", function (evt) {
       if (_this.props.captureClick) {
         evt.stopPropagation();
       }
 
-      if (evt.type === 'click' && (_this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button')) {
+      if (_this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button') {
         _this.props.onClose();
+
+        var eventManager = _this._context.eventManager;
+
+        if (eventManager) {
+          eventManager.once('click', function (e) {
+            return e.stopPropagation();
+          }, evt.target);
+        }
       }
     });
     return _this;
@@ -94,7 +110,7 @@ var Popup = function (_BaseControl) {
   (0, _createClass2["default"])(Popup, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      (0, _get2["default"])((0, _getPrototypeOf3["default"])(Popup.prototype), "componentDidMount", this).call(this);
+      (0, _get2["default"])((0, _getPrototypeOf2["default"])(Popup.prototype), "componentDidMount", this).call(this);
       this.forceUpdate();
     }
   }, {
@@ -133,9 +149,12 @@ var Popup = function (_BaseControl) {
       var anchorPosition = _dynamicPosition.ANCHOR_POSITION[positionType];
       var left = x + offsetLeft;
       var top = y + offsetTop;
+      var el = this._containerRef.current;
+      var xPercentage = (0, _crispPixel.crispPercentage)(el, -anchorPosition.x * 100);
+      var yPercentage = (0, _crispPixel.crispPercentage)(el, -anchorPosition.y * 100, 'y');
       var style = {
         position: 'absolute',
-        transform: "\n        translate(".concat(-anchorPosition.x * 100, "%, ").concat(-anchorPosition.y * 100, "%)\n        translate(").concat(left, "px, ").concat(top, "px)\n      "),
+        transform: "\n        translate(".concat(xPercentage, "%, ").concat(yPercentage, "%)\n        translate(").concat((0, _crispPixel.crispPixel)(left), "px, ").concat((0, _crispPixel.crispPixel)(top), "px)\n      "),
         display: undefined,
         zIndex: undefined
       };
@@ -156,9 +175,9 @@ var Popup = function (_BaseControl) {
     key: "_renderTip",
     value: function _renderTip(positionType) {
       var tipSize = this.props.tipSize;
-      return (0, _react.createElement)('div', {
-        key: 'tip',
-        className: 'mapboxgl-popup-tip',
+      return React.createElement("div", {
+        key: "tip",
+        className: "mapboxgl-popup-tip",
         style: {
           borderWidth: tipSize
         }
@@ -171,16 +190,16 @@ var Popup = function (_BaseControl) {
           closeButton = _this$props3.closeButton,
           children = _this$props3.children;
       var onClick = this._context.eventManager ? null : this._onClick;
-      return (0, _react.createElement)('div', {
-        key: 'content',
+      return React.createElement("div", {
+        key: "content",
         ref: this._contentRef,
-        className: 'mapboxgl-popup-content',
+        className: "mapboxgl-popup-content",
         onClick: onClick
-      }, [closeButton && (0, _react.createElement)('button', {
-        key: 'close-button',
-        className: 'mapboxgl-popup-close-button',
-        type: 'button'
-      }, '×'), children]);
+      }, closeButton && React.createElement("button", {
+        key: "close-button",
+        className: "mapboxgl-popup-close-button",
+        type: "button"
+      }, "\xD7"), children);
     }
   }, {
     key: "_render",
@@ -201,11 +220,11 @@ var Popup = function (_BaseControl) {
 
       var containerStyle = this._getContainerStyle(x, y, z, positionType);
 
-      return (0, _react.createElement)('div', {
+      return React.createElement("div", {
         className: "mapboxgl-popup mapboxgl-popup-anchor-".concat(positionType, " ").concat(className),
         style: containerStyle,
         ref: this._containerRef
-      }, [this._renderTip(positionType), this._renderContent()]);
+      }, this._renderTip(positionType), this._renderContent());
     }
   }]);
   return Popup;

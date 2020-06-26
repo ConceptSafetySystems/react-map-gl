@@ -1,17 +1,27 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
 import assert from '../assert';
 import TransitionInterpolator from './transition-interpolator';
-import { flyToViewport } from 'viewport-mercator-project';
+import { flyToViewport, getFlyToDuration } from 'viewport-mercator-project';
 import { isValid, getEndValueByShortestPath } from './transition-utils';
 import { lerp } from '../math-utils';
 const VIEWPORT_TRANSITION_PROPS = ['longitude', 'latitude', 'zoom', 'bearing', 'pitch'];
 const REQUIRED_PROPS = ['latitude', 'longitude', 'zoom', 'width', 'height'];
 const LINEARLY_INTERPOLATED_PROPS = ['bearing', 'pitch'];
+const DEFAULT_OPTS = {
+  speed: 1.2,
+  curve: 1.414
+};
 export default class ViewportFlyToInterpolator extends TransitionInterpolator {
-  constructor() {
-    super(...arguments);
+  constructor(props = {}) {
+    super();
+
+    _defineProperty(this, "speed", void 0);
 
     _defineProperty(this, "propNames", VIEWPORT_TRANSITION_PROPS);
+
+    _defineProperty(this, "props", void 0);
+
+    this.props = Object.assign({}, DEFAULT_OPTS, props);
   }
 
   initializeProps(startProps, endProps) {
@@ -40,13 +50,25 @@ export default class ViewportFlyToInterpolator extends TransitionInterpolator {
   }
 
   interpolateProps(startProps, endProps, t) {
-    const viewport = flyToViewport(startProps, endProps, t);
+    const viewport = flyToViewport(startProps, endProps, t, this.props);
 
     for (const key of LINEARLY_INTERPOLATED_PROPS) {
       viewport[key] = lerp(startProps[key], endProps[key], t);
     }
 
     return viewport;
+  }
+
+  getDuration(startProps, endProps) {
+    let {
+      transitionDuration
+    } = endProps;
+
+    if (transitionDuration === 'auto') {
+      transitionDuration = getFlyToDuration(startProps, endProps, this.props);
+    }
+
+    return transitionDuration;
   }
 
 }

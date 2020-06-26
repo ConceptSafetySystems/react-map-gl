@@ -1,8 +1,10 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement, createRef } from 'react';
+import * as React from 'react';
+import { createRef } from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 import { getDynamicPosition, ANCHOR_POSITION } from '../utils/dynamic-position';
+import { crispPercentage, crispPixel } from '../utils/crisp-pixel';
 const propTypes = Object.assign({}, BaseControl.propTypes, {
   className: PropTypes.string,
   longitude: PropTypes.number.isRequired,
@@ -32,8 +34,8 @@ const defaultProps = Object.assign({}, BaseControl.defaultProps, {
   onClose: () => {}
 });
 export default class Popup extends BaseControl {
-  constructor() {
-    super(...arguments);
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "_closeOnClick", false);
 
@@ -44,8 +46,15 @@ export default class Popup extends BaseControl {
         evt.stopPropagation();
       }
 
-      if (evt.type === 'click' && (this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button')) {
+      if (this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button') {
         this.props.onClose();
+        const {
+          eventManager
+        } = this._context;
+
+        if (eventManager) {
+          eventManager.once('click', e => e.stopPropagation(), evt.target);
+        }
       }
     });
   }
@@ -94,9 +103,12 @@ export default class Popup extends BaseControl {
     const anchorPosition = ANCHOR_POSITION[positionType];
     const left = x + offsetLeft;
     const top = y + offsetTop;
+    const el = this._containerRef.current;
+    const xPercentage = crispPercentage(el, -anchorPosition.x * 100);
+    const yPercentage = crispPercentage(el, -anchorPosition.y * 100, 'y');
     const style = {
       position: 'absolute',
-      transform: "\n        translate(".concat(-anchorPosition.x * 100, "%, ").concat(-anchorPosition.y * 100, "%)\n        translate(").concat(left, "px, ").concat(top, "px)\n      "),
+      transform: "\n        translate(".concat(xPercentage, "%, ").concat(yPercentage, "%)\n        translate(").concat(crispPixel(left), "px, ").concat(crispPixel(top), "px)\n      "),
       display: undefined,
       zIndex: undefined
     };
@@ -118,9 +130,9 @@ export default class Popup extends BaseControl {
     const {
       tipSize
     } = this.props;
-    return createElement('div', {
-      key: 'tip',
-      className: 'mapboxgl-popup-tip',
+    return React.createElement("div", {
+      key: "tip",
+      className: "mapboxgl-popup-tip",
       style: {
         borderWidth: tipSize
       }
@@ -133,16 +145,16 @@ export default class Popup extends BaseControl {
       children
     } = this.props;
     const onClick = this._context.eventManager ? null : this._onClick;
-    return createElement('div', {
-      key: 'content',
+    return React.createElement("div", {
+      key: "content",
       ref: this._contentRef,
-      className: 'mapboxgl-popup-content',
-      onClick
-    }, [closeButton && createElement('button', {
-      key: 'close-button',
-      className: 'mapboxgl-popup-close-button',
-      type: 'button'
-    }, '×'), children]);
+      className: "mapboxgl-popup-content",
+      onClick: onClick
+    }, closeButton && React.createElement("button", {
+      key: "close-button",
+      className: "mapboxgl-popup-close-button",
+      type: "button"
+    }, "\xD7"), children);
   }
 
   _render() {
@@ -159,11 +171,11 @@ export default class Popup extends BaseControl {
 
     const containerStyle = this._getContainerStyle(x, y, z, positionType);
 
-    return createElement('div', {
+    return React.createElement("div", {
       className: "mapboxgl-popup mapboxgl-popup-anchor-".concat(positionType, " ").concat(className),
       style: containerStyle,
       ref: this._containerRef
-    }, [this._renderTip(positionType), this._renderContent()]);
+    }, this._renderTip(positionType), this._renderContent());
   }
 
 }

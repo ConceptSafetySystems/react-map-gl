@@ -1,5 +1,5 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from '../components/base-control';
 const propTypes = Object.assign({}, BaseControl.propTypes, {
@@ -25,9 +25,9 @@ export default class HTMLOverlay extends BaseControl {
       width: viewport.width,
       height: viewport.height
     }, this.props.style);
-    return createElement('div', {
+    return React.createElement("div", {
       ref: this._containerRef,
-      style
+      style: style
     }, this.props.redraw({
       width: viewport.width,
       height: viewport.height,

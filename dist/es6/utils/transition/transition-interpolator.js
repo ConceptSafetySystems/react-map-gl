@@ -27,5 +27,9 @@ export default class TransitionInterpolator {
     assert(false, 'interpolateProps is not implemented');
   }
 
+  getDuration(startProps, endProps) {
+    return endProps.transitionDuration;
+  }
+
 }
 //# sourceMappingURL=transition-interpolator.js.map

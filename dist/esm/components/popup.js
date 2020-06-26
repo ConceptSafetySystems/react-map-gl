@@ -1,16 +1,23 @@
 import _slicedToArray from "@babel/runtime/helpers/esm/slicedToArray";
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _get from "@babel/runtime/helpers/esm/get";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement, createRef } from 'react';
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
+import { createRef } from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 import { getDynamicPosition, ANCHOR_POSITION } from '../utils/dynamic-position';
+import { crispPercentage, crispPixel } from '../utils/crisp-pixel';
 var propTypes = Object.assign({}, BaseControl.propTypes, {
   className: PropTypes.string,
   longitude: PropTypes.number.isRequired,
@@ -43,9 +50,9 @@ var defaultProps = Object.assign({}, BaseControl.defaultProps, {
 var Popup = function (_BaseControl) {
   _inherits(Popup, _BaseControl);
 
-  function Popup() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(Popup);
 
+  function Popup() {
     var _this;
 
     _classCallCheck(this, Popup);
@@ -54,7 +61,7 @@ var Popup = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(Popup)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "_closeOnClick", false);
 
@@ -65,8 +72,16 @@ var Popup = function (_BaseControl) {
         evt.stopPropagation();
       }
 
-      if (evt.type === 'click' && (_this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button')) {
+      if (_this.props.closeOnClick || evt.target.className === 'mapboxgl-popup-close-button') {
         _this.props.onClose();
+
+        var eventManager = _this._context.eventManager;
+
+        if (eventManager) {
+          eventManager.once('click', function (e) {
+            return e.stopPropagation();
+          }, evt.target);
+        }
       }
     });
 
@@ -116,9 +131,12 @@ var Popup = function (_BaseControl) {
       var anchorPosition = ANCHOR_POSITION[positionType];
       var left = x + offsetLeft;
       var top = y + offsetTop;
+      var el = this._containerRef.current;
+      var xPercentage = crispPercentage(el, -anchorPosition.x * 100);
+      var yPercentage = crispPercentage(el, -anchorPosition.y * 100, 'y');
       var style = {
         position: 'absolute',
-        transform: "\n        translate(".concat(-anchorPosition.x * 100, "%, ").concat(-anchorPosition.y * 100, "%)\n        translate(").concat(left, "px, ").concat(top, "px)\n      "),
+        transform: "\n        translate(".concat(xPercentage, "%, ").concat(yPercentage, "%)\n        translate(").concat(crispPixel(left), "px, ").concat(crispPixel(top), "px)\n      "),
         display: undefined,
         zIndex: undefined
       };
@@ -139,9 +157,9 @@ var Popup = function (_BaseControl) {
     key: "_renderTip",
     value: function _renderTip(positionType) {
       var tipSize = this.props.tipSize;
-      return createElement('div', {
-        key: 'tip',
-        className: 'mapboxgl-popup-tip',
+      return React.createElement("div", {
+        key: "tip",
+        className: "mapboxgl-popup-tip",
         style: {
           borderWidth: tipSize
         }
@@ -154,16 +172,16 @@ var Popup = function (_BaseControl) {
           closeButton = _this$props3.closeButton,
           children = _this$props3.children;
       var onClick = this._context.eventManager ? null : this._onClick;
-      return createElement('div', {
-        key: 'content',
+      return React.createElement("div", {
+        key: "content",
         ref: this._contentRef,
-        className: 'mapboxgl-popup-content',
+        className: "mapboxgl-popup-content",
         onClick: onClick
-      }, [closeButton && createElement('button', {
-        key: 'close-button',
-        className: 'mapboxgl-popup-close-button',
-        type: 'button'
-      }, '×'), children]);
+      }, closeButton && React.createElement("button", {
+        key: "close-button",
+        className: "mapboxgl-popup-close-button",
+        type: "button"
+      }, "\xD7"), children);
     }
   }, {
     key: "_render",
@@ -184,11 +202,11 @@ var Popup = function (_BaseControl) {
 
       var containerStyle = this._getContainerStyle(x, y, z, positionType);
 
-      return createElement('div', {
+      return React.createElement("div", {
         className: "mapboxgl-popup mapboxgl-popup-anchor-".concat(positionType, " ").concat(className),
         style: containerStyle,
         ref: this._containerRef
-      }, [this._renderTip(positionType), this._renderContent()]);
+      }, this._renderTip(positionType), this._renderContent());
     }
   }]);
 

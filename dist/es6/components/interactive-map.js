@@ -1,5 +1,7 @@
+import _extends from "@babel/runtime/helpers/esm/extends";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { PureComponent, createElement, createRef } from 'react';
+import * as React from 'react';
+import { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import StaticMap from './static-map';
 import { MAPBOX_LIMITS } from '../utils/map-state';
@@ -17,7 +19,7 @@ const propTypes = Object.assign({}, StaticMap.propTypes, {
   onViewStateChange: PropTypes.func,
   onViewportChange: PropTypes.func,
   onInteractionStateChange: PropTypes.func,
-  transitionDuration: PropTypes.number,
+  transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   transitionInterpolator: PropTypes.object,
   transitionInterruption: PropTypes.number,
   transitionEasing: PropTypes.func,
@@ -52,13 +54,10 @@ const propTypes = Object.assign({}, StaticMap.propTypes, {
   controller: PropTypes.instanceOf(MapController)
 });
 
-const getDefaultCursor = (_ref) => {
-  let {
-    isDragging,
-    isHovering
-  } = _ref;
-  return isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
-};
+const getDefaultCursor = ({
+  isDragging,
+  isHovering
+}) => isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab';
 
 const defaultProps = Object.assign({}, StaticMap.defaultProps, MAPBOX_LIMITS, TransitionManager.defaultProps, {
   onViewStateChange: null,
@@ -84,10 +83,7 @@ export default class InteractiveMap extends PureComponent {
   }
 
   constructor(props) {
-    var _this;
-
     super(props);
-    _this = this;
 
     _defineProperty(this, "state", {
       isLoaded: false,
@@ -113,11 +109,8 @@ export default class InteractiveMap extends PureComponent {
       return this._staticMapRef.current ? this._staticMapRef.current.getMap() : null;
     });
 
-    _defineProperty(this, "queryRenderedFeatures", function (geometry) {
-      let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      const map = _this.getMap();
-
+    _defineProperty(this, "queryRenderedFeatures", (geometry, options = {}) => {
+      const map = this.getMap();
       return map && map.queryRenderedFeatures(geometry, options);
     });
 
@@ -127,6 +120,10 @@ export default class InteractiveMap extends PureComponent {
       } = interactionState;
 
       if (isDragging !== this.state.isDragging) {
+        this._updateInteractiveContext({
+          isDragging
+        });
+
         this.setState({
           isDragging
         });
@@ -141,11 +138,10 @@ export default class InteractiveMap extends PureComponent {
       }
     });
 
-    _defineProperty(this, "_onResize", (_ref2) => {
-      let {
-        width,
-        height
-      } = _ref2;
+    _defineProperty(this, "_onResize", ({
+      width,
+      height
+    }) => {
       this._width = width;
       this._height = height;
 
@@ -346,14 +342,12 @@ export default class InteractiveMap extends PureComponent {
     });
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    this._setControllerProps(nextProps);
+  componentDidUpdate() {
+    this._setControllerProps(this.props);
+  }
 
-    if (nextState.isDragging !== this.state.isDragging) {
-      this._updateInteractiveContext({
-        isDragging: nextState.isDragging
-      });
-    }
+  componentWillUnmount() {
+    this._eventManager.destroy();
   }
 
   _setControllerProps(props) {
@@ -368,17 +362,15 @@ export default class InteractiveMap extends PureComponent {
 
     this._controller.setOptions(props);
 
-    this._updateInteractiveContext({
-      onViewStateChange: props.onViewStateChange,
-      onViewportChange: props.onViewportChange
-    });
+    const context = this._interactiveContext;
+    context.onViewportChange = props.onViewportChange;
+    context.onViewStateChange = props.onViewStateChange;
   }
 
-  _getFeatures(_ref3) {
-    let {
-      pos,
-      radius
-    } = _ref3;
+  _getFeatures({
+    pos,
+    radius
+  }) {
     let features;
     const queryParams = {};
     const map = this.getMap();
@@ -437,21 +429,20 @@ export default class InteractiveMap extends PureComponent {
       height,
       cursor: getCursor(this.state)
     });
-    return createElement(MapContext.Provider, {
+    return React.createElement(MapContext.Provider, {
       value: this._interactiveContext
-    }, createElement('div', {
-      key: 'event-canvas',
+    }, React.createElement("div", {
+      key: "event-canvas",
       ref: this._eventCanvasRef,
       style: eventCanvasStyle
-    }, createElement(StaticMap, Object.assign({}, this.props, {
-      width: '100%',
-      height: '100%',
+    }, React.createElement(StaticMap, _extends({}, this.props, {
+      width: "100%",
+      height: "100%",
       style: null,
       onResize: this._onResize,
       onLoad: this._onLoad,
-      ref: this._staticMapRef,
-      children: this.props.children
-    }))));
+      ref: this._staticMapRef
+    }), this.props.children)));
   }
 
 }

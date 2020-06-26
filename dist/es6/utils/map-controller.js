@@ -2,6 +2,7 @@ import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
 import MapState from './map-state';
 import { LinearInterpolator } from './transition';
 import TransitionManager, { TRANSITION_EVENTS } from './transition-manager';
+import debounce from './debounce';
 const NO_TRANSITION_PROPS = {
   transitionDuration: 0
 };
@@ -17,7 +18,7 @@ const ZOOM_ACCEL = 0.01;
 const EVENT_TYPES = {
   WHEEL: ['wheel'],
   PAN: ['panstart', 'panmove', 'panend'],
-  PINCH: ['pinchstart', 'pinchmove', 'pinchend'],
+  PINCH: ['pinchstart', 'pinchmove', 'pinchend', 'pinchcancel'],
   DOUBLE_TAP: ['doubletap'],
   KEYBOARD: ['keydown']
 };
@@ -66,6 +67,7 @@ export default class MapController {
     });
 
     this.handleEvent = this.handleEvent.bind(this);
+    this._onWheelEnd = debounce(this._onWheelEnd, 100);
   }
 
   handleEvent(event) {
@@ -87,6 +89,7 @@ export default class MapController {
       case 'pinchmove':
         return this._onPinch(event);
 
+      case 'pinchcancel':
       case 'pinchend':
         return this._onPinchEnd(event);
 
@@ -121,9 +124,7 @@ export default class MapController {
     return Boolean(srcEvent.metaKey || srcEvent.altKey || srcEvent.ctrlKey || srcEvent.shiftKey);
   }
 
-  updateViewport(newMapState) {
-    let extraProps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    let extraState = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  updateViewport(newMapState, extraProps = {}, extraState = {}) {
     const oldViewport = this.mapState ? this.mapState.getViewportProps() : {};
     const newViewport = Object.assign({}, newMapState.getViewportProps(), extraProps);
     const viewStateChanged = Object.keys(newViewport).some(key => oldViewport[key] !== newViewport[key]);
@@ -155,12 +156,12 @@ export default class MapController {
     } = options;
     this.onViewportChange = onViewportChange;
     this.onStateChange = onStateChange;
+    const dimensionChanged = !this.mapStateProps || this.mapStateProps.height !== options.height;
+    this.mapStateProps = options;
 
-    if (!this.mapStateProps || this.mapStateProps.height !== options.height) {
+    if (dimensionChanged) {
       this.updateViewport(new MapState(options));
     }
-
-    this.mapStateProps = options;
 
     this._transitionManager.processViewportChange(Object.assign({}, options, {
       onStateChange: this.setState
@@ -306,10 +307,16 @@ export default class MapController {
     this.updateViewport(newMapState, NO_TRANSITION_PROPS, {
       isZooming: true
     });
+
+    this._onWheelEnd();
+
+    return true;
+  }
+
+  _onWheelEnd() {
     this.setState({
       isZooming: false
     });
-    return true;
   }
 
   _onPinchStart(event) {
@@ -392,7 +399,9 @@ export default class MapController {
       transitionInterpolator: new LinearInterpolator({
         around: pos
       })
-    }));
+    }), {
+      isZooming: true
+    });
     return true;
   }
 

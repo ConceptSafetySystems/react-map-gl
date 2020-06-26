@@ -1,14 +1,19 @@
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 import { document } from '../utils/globals';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
-import { createElement } from 'react';
+import * as React from 'react';
 import mapboxgl from '../utils/mapboxgl';
 var propTypes = Object.assign({}, BaseControl.propTypes, {
   className: PropTypes.string,
@@ -22,9 +27,9 @@ var defaultProps = Object.assign({}, BaseControl.defaultProps, {
 var FullscreenControl = function (_BaseControl) {
   _inherits(FullscreenControl, _BaseControl);
 
-  function FullscreenControl() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(FullscreenControl);
 
+  function FullscreenControl() {
     var _this;
 
     _classCallCheck(this, FullscreenControl);
@@ -33,7 +38,7 @@ var FullscreenControl = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(FullscreenControl)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "state", {
       isFullscreen: false,
@@ -78,13 +83,16 @@ var FullscreenControl = function (_BaseControl) {
   }, {
     key: "_renderButton",
     value: function _renderButton(type, label, callback) {
-      return createElement('button', {
+      return React.createElement("button", {
         key: type,
         className: "mapboxgl-ctrl-icon mapboxgl-ctrl-".concat(type),
-        type: 'button',
+        type: "button",
         title: label,
         onClick: callback
-      });
+      }, React.createElement("span", {
+        className: "mapboxgl-ctrl-icon",
+        "aria-hidden": "true"
+      }));
     }
   }, {
     key: "_render",
@@ -96,10 +104,10 @@ var FullscreenControl = function (_BaseControl) {
       var className = this.props.className;
       var isFullscreen = this.state.isFullscreen;
       var type = isFullscreen ? 'shrink' : 'fullscreen';
-      return createElement('div', {
+      return React.createElement("div", {
         className: "mapboxgl-ctrl mapboxgl-ctrl-group ".concat(className),
         ref: this._containerRef
-      }, [this._renderButton(type, 'Toggle fullscreen', this._onClickFullscreen)]);
+      }, this._renderButton(type, 'Toggle fullscreen', this._onClickFullscreen));
     }
   }]);
 

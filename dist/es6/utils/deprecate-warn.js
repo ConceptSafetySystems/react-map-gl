@@ -26,8 +26,7 @@ function getNewText(name) {
   return "Use `".concat(name, "` instead.");
 }
 
-export default function checkDeprecatedProps() {
-  let props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+export default function checkDeprecatedProps(props = {}) {
   DEPRECATED_PROPS.forEach(depProp => {
     if (props.hasOwnProperty(depProp.old)) {
       let warnMessage = getDeprecatedText(depProp.old);

@@ -104,7 +104,11 @@ export default class TransitionManager {
   }
 
   _isTransitionEnabled(props) {
-    return props.transitionDuration > 0 && Boolean(props.transitionInterpolator);
+    const {
+      transitionDuration,
+      transitionInterpolator
+    } = props;
+    return (transitionDuration > 0 || transitionDuration === 'auto') && Boolean(transitionInterpolator);
   }
 
   _isUpdateDueToCurrentTransition(props) {
@@ -132,10 +136,19 @@ export default class TransitionManager {
   }
 
   _triggerTransition(startProps, endProps) {
-    assert(this._isTransitionEnabled(endProps), 'Transition is not enabled');
+    assert(this._isTransitionEnabled(endProps));
 
     if (this._animationFrame) {
       cancelAnimationFrame(this._animationFrame);
+    }
+
+    const {
+      transitionInterpolator
+    } = endProps;
+    const duration = transitionInterpolator.getDuration ? transitionInterpolator.getDuration(startProps, endProps) : endProps.transitionDuration;
+
+    if (duration === 0) {
+      return;
     }
 
     const initialProps = endProps.transitionInterpolator.initializeProps(startProps, endProps);
@@ -146,7 +159,7 @@ export default class TransitionManager {
       isRotating: startProps.bearing !== endProps.bearing || startProps.pitch !== endProps.pitch
     };
     this.state = {
-      duration: endProps.transitionDuration,
+      duration,
       easing: endProps.transitionEasing,
       interpolator: endProps.transitionInterpolator,
       interruption: endProps.transitionInterruption,

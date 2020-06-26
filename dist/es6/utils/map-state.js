@@ -15,31 +15,29 @@ const DEFAULT_STATE = {
   altitude: 1.5
 };
 export default class MapState {
-  constructor(_ref) {
-    let {
-      width,
-      height,
-      latitude,
-      longitude,
-      zoom,
-      bearing = DEFAULT_STATE.bearing,
-      pitch = DEFAULT_STATE.pitch,
-      altitude = DEFAULT_STATE.altitude,
-      maxZoom = MAPBOX_LIMITS.maxZoom,
-      minZoom = MAPBOX_LIMITS.minZoom,
-      maxPitch = MAPBOX_LIMITS.maxPitch,
-      minPitch = MAPBOX_LIMITS.minPitch,
-      transitionDuration,
-      transitionEasing,
-      transitionInterpolator,
-      transitionInterruption,
-      startPanLngLat,
-      startZoomLngLat,
-      startBearing,
-      startPitch,
-      startZoom
-    } = _ref;
-
+  constructor({
+    width,
+    height,
+    latitude,
+    longitude,
+    zoom,
+    bearing = DEFAULT_STATE.bearing,
+    pitch = DEFAULT_STATE.pitch,
+    altitude = DEFAULT_STATE.altitude,
+    maxZoom = MAPBOX_LIMITS.maxZoom,
+    minZoom = MAPBOX_LIMITS.minZoom,
+    maxPitch = MAPBOX_LIMITS.maxPitch,
+    minPitch = MAPBOX_LIMITS.minPitch,
+    transitionDuration,
+    transitionEasing,
+    transitionInterpolator,
+    transitionInterruption,
+    startPanLngLat,
+    startZoomLngLat,
+    startBearing,
+    startPitch,
+    startZoom
+  }) {
     _defineProperty(this, "_viewportProps", void 0);
 
     _defineProperty(this, "_interactiveState", void 0);
@@ -84,21 +82,18 @@ export default class MapState {
     return this._interactiveState;
   }
 
-  panStart(_ref2) {
-    let {
-      pos
-    } = _ref2;
+  panStart({
+    pos
+  }) {
     return this._getUpdatedMapState({
       startPanLngLat: this._unproject(pos)
     });
   }
 
-  pan(_ref3) {
-    let {
-      pos,
-      startPos
-    } = _ref3;
-
+  pan({
+    pos,
+    startPos
+  }) {
     const startPanLngLat = this._interactiveState.startPanLngLat || this._unproject(startPos);
 
     if (!startPanLngLat) {
@@ -122,21 +117,19 @@ export default class MapState {
     });
   }
 
-  rotateStart(_ref4) {
-    let {
-      pos
-    } = _ref4;
+  rotateStart({
+    pos
+  }) {
     return this._getUpdatedMapState({
       startBearing: this._viewportProps.bearing,
       startPitch: this._viewportProps.pitch
     });
   }
 
-  rotate(_ref5) {
-    let {
-      deltaScaleX = 0,
-      deltaScaleY = 0
-    } = _ref5;
+  rotate({
+    deltaScaleX = 0,
+    deltaScaleY = 0
+  }) {
     const {
       startBearing,
       startPitch
@@ -169,22 +162,20 @@ export default class MapState {
     });
   }
 
-  zoomStart(_ref6) {
-    let {
-      pos
-    } = _ref6;
+  zoomStart({
+    pos
+  }) {
     return this._getUpdatedMapState({
       startZoomLngLat: this._unproject(pos),
       startZoom: this._viewportProps.zoom
     });
   }
 
-  zoom(_ref7) {
-    let {
-      pos,
-      startPos,
-      scale
-    } = _ref7;
+  zoom({
+    pos,
+    startPos,
+    scale
+  }) {
     assert(scale > 0, '`scale` must be a positive number');
     let {
       startZoom,
@@ -250,11 +241,10 @@ export default class MapState {
     return pos && viewport.unproject(pos);
   }
 
-  _calculateNewLngLat(_ref8) {
-    let {
-      startPanLngLat,
-      pos
-    } = _ref8;
+  _calculateNewLngLat({
+    startPanLngLat,
+    pos
+  }) {
     const viewport = new WebMercatorViewport(this._viewportProps);
     return viewport.getMapCenterByLngLatPosition({
       lngLat: startPanLngLat,
@@ -262,11 +252,10 @@ export default class MapState {
     });
   }
 
-  _calculateNewZoom(_ref9) {
-    let {
-      scale,
-      startZoom
-    } = _ref9;
+  _calculateNewZoom({
+    scale,
+    startZoom
+  }) {
     const {
       maxZoom,
       minZoom
@@ -275,13 +264,12 @@ export default class MapState {
     return clamp(zoom, minZoom, maxZoom);
   }
 
-  _calculateNewPitchAndBearing(_ref10) {
-    let {
-      deltaScaleX,
-      deltaScaleY,
-      startBearing,
-      startPitch
-    } = _ref10;
+  _calculateNewPitchAndBearing({
+    deltaScaleX,
+    deltaScaleY,
+    startBearing,
+    startPitch
+  }) {
     deltaScaleY = clamp(deltaScaleY, -1, 1);
     const {
       minPitch,

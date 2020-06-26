@@ -1,5 +1,11 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { PureComponent, createElement, createRef } from 'react';
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+import * as React from 'react';
+import { PureComponent, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { normalizeStyle } from '../utils/style-utils';
 import WebMercatorViewport from 'viewport-mercator-project';
@@ -9,7 +15,7 @@ import mapboxgl from '../utils/mapboxgl';
 import { checkVisibilityConstraints } from '../utils/map-constraints';
 import { MAPBOX_LIMITS } from '../utils/map-state';
 import MapContext from './map-context';
-const TOKEN_DOC_URL = 'https://uber.github.io/react-map-gl/#/Documentation/getting-started/about-mapbox-tokens';
+const TOKEN_DOC_URL = 'https://visgl.github.io/react-map-gl/docs/get-started/mapbox-tokens';
 const NO_TOKEN_WARNING = 'A valid API access token is required to use Mapbox data';
 
 function noop() {}
@@ -42,11 +48,8 @@ const defaultProps = Object.assign({}, Mapbox.defaultProps, {
   visibilityConstraints: MAPBOX_LIMITS
 });
 export default class StaticMap extends PureComponent {
-  constructor() {
-    var _this;
-
-    super(...arguments);
-    _this = this;
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "state", {
       accessTokenInvalid: false
@@ -70,9 +73,8 @@ export default class StaticMap extends PureComponent {
       return this._map;
     });
 
-    _defineProperty(this, "queryRenderedFeatures", function (geometry) {
-      let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      return _this._map.queryRenderedFeatures(geometry, options);
+    _defineProperty(this, "queryRenderedFeatures", (geometry, options = {}) => {
+      return this._map.queryRenderedFeatures(geometry, options);
     });
 
     _defineProperty(this, "_mapboxMapError", evt => {
@@ -142,7 +144,7 @@ export default class StaticMap extends PureComponent {
     const mapStyle = newProps.mapStyle;
     const oldMapStyle = oldProps.mapStyle;
 
-    if (mapStyle !== oldMapStyle) {
+    if (mapStyle !== oldMapStyle && mapStyle) {
       this._map.setStyle(normalizeStyle(mapStyle), {
         diff: !this.props.preventStyleDiffing
       });
@@ -167,18 +169,18 @@ export default class StaticMap extends PureComponent {
         left: 0,
         top: 0
       };
-      return createElement('div', {
-        key: 'warning',
-        id: 'no-token-warning',
-        style
-      }, [createElement('h3', {
-        key: 'header'
-      }, NO_TOKEN_WARNING), createElement('div', {
-        key: 'text'
-      }, 'For information on setting up your basemap, read'), createElement('a', {
-        key: 'link',
+      return React.createElement("div", {
+        key: "warning",
+        id: "no-token-warning",
+        style: style
+      }, React.createElement("h3", {
+        key: "header"
+      }, "NO_TOKEN_WARNING"), React.createElement("div", {
+        key: "text"
+      }, "For information on setting up your basemap, read"), React.createElement("a", {
+        key: "link",
         href: TOKEN_DOC_URL
-      }, 'Note on Map Tokens')]);
+      }, "Note on Map Tokens"));
     }
 
     return null;
@@ -192,23 +194,23 @@ export default class StaticMap extends PureComponent {
 
     this._updateMapSize(width, height);
 
-    return createElement(MapContext.Consumer, null, interactiveContext => {
-      const context = Object.assign({}, interactiveContext, {
-        viewport: new WebMercatorViewport(Object.assign({}, this.props, this.props.viewState, {
+    return React.createElement(MapContext.Consumer, null, interactiveContext => {
+      const context = _objectSpread(_objectSpread({}, interactiveContext), {}, {
+        viewport: new WebMercatorViewport(_objectSpread(_objectSpread(_objectSpread({}, this.props), this.props.viewState), {}, {
           width,
           height
         })),
         map: this._map,
         mapContainer: interactiveContext.mapContainer || this._mapContainerRef.current
       });
-      return createElement(MapContext.Provider, {
+
+      return React.createElement(MapContext.Provider, {
         value: context
-      }, createElement('div', {
-        key: 'map-overlays',
-        className: 'overlays',
-        style: CONTAINER_STYLE,
-        children: this.props.children
-      }));
+      }, React.createElement("div", {
+        key: "map-overlays",
+        className: "overlays",
+        style: CONTAINER_STYLE
+      }, this.props.children));
     });
   }
 
@@ -230,22 +232,21 @@ export default class StaticMap extends PureComponent {
     const mapStyle = Object.assign({}, CONTAINER_STYLE, {
       visibility: visible ? 'inherit' : 'hidden'
     });
-    return createElement('div', {
-      key: 'map-container',
+    return React.createElement("div", {
+      key: "map-container",
       style: mapContainerStyle,
-      ref: this._mapContainerRef,
-      children: [createElement('div', {
-        key: 'map-mapbox',
-        ref: this._mapboxMapRef,
-        style: mapStyle,
-        className
-      }), createElement(AutoSizer, {
-        key: 'autosizer',
-        disableWidth: Number.isFinite(width),
-        disableHeight: Number.isFinite(height),
-        onResize: this.props.onResize
-      }, this._renderOverlays.bind(this)), this._renderNoTokenWarning()]
-    });
+      ref: this._mapContainerRef
+    }, React.createElement("div", {
+      key: "map-mapbox",
+      ref: this._mapboxMapRef,
+      style: mapStyle,
+      className: className
+    }), React.createElement(AutoSizer, {
+      key: "autosizer",
+      disableWidth: Number.isFinite(width),
+      disableHeight: Number.isFinite(height),
+      onResize: this.props.onResize
+    }, this._renderOverlays.bind(this)), this._renderNoTokenWarning());
   }
 
 }

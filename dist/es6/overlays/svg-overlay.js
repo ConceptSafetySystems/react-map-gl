@@ -1,5 +1,5 @@
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from '../components/base-control';
 const propTypes = Object.assign({}, BaseControl.propTypes, {
@@ -23,11 +23,11 @@ export default class SVGOverlay extends BaseControl {
       left: 0,
       top: 0
     }, this.props.style);
-    return createElement('svg', {
+    return React.createElement("svg", {
       width: viewport.width,
       height: viewport.height,
       ref: this._containerRef,
-      style
+      style: style
     }, this.props.redraw({
       width: viewport.width,
       height: viewport.height,

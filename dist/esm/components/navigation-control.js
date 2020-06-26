@@ -1,16 +1,22 @@
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from './base-control';
 import MapState from '../utils/map-state';
 import { LINEAR_TRANSITION_PROPS } from '../utils/map-controller';
 import deprecateWarn from '../utils/deprecate-warn';
+import { compareVersions } from '../utils/version';
 
 var noop = function noop() {};
 
@@ -19,23 +25,39 @@ var propTypes = Object.assign({}, BaseControl.propTypes, {
   onViewStateChange: PropTypes.func,
   onViewportChange: PropTypes.func,
   showCompass: PropTypes.bool,
-  showZoom: PropTypes.bool
+  showZoom: PropTypes.bool,
+  zoomInLabel: PropTypes.string,
+  zoomOutLabel: PropTypes.string,
+  compassLabel: PropTypes.string
 });
 var defaultProps = Object.assign({}, BaseControl.defaultProps, {
   className: '',
   showCompass: true,
-  showZoom: true
+  showZoom: true,
+  zoomInLabel: 'Zoom In',
+  zoomOutLabel: 'Zoom Out',
+  compassLabel: 'Reset North'
 });
+var VERSION_LEGACY = 1;
+var VERSION_1_6 = 2;
+
+function getUIVersion(mapboxVersion) {
+  return compareVersions(mapboxVersion, '1.6.0') >= 0 ? VERSION_1_6 : VERSION_LEGACY;
+}
 
 var NavigationControl = function (_BaseControl) {
   _inherits(NavigationControl, _BaseControl);
+
+  var _super = _createSuper(NavigationControl);
 
   function NavigationControl(props) {
     var _this;
 
     _classCallCheck(this, NavigationControl);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(NavigationControl).call(this, props));
+    _this = _super.call(this, props);
+
+    _defineProperty(_assertThisInitialized(_this), "_uiVersion", void 0);
 
     _defineProperty(_assertThisInitialized(_this), "_onZoomIn", function () {
       _this._updateViewport({
@@ -77,24 +99,31 @@ var NavigationControl = function (_BaseControl) {
     key: "_renderCompass",
     value: function _renderCompass() {
       var bearing = this._context.viewport.bearing;
-      return createElement('span', {
-        className: 'mapboxgl-ctrl-compass-arrow',
-        style: {
-          transform: "rotate(".concat(-bearing, "deg)")
-        }
+      var style = {
+        transform: "rotate(".concat(-bearing, "deg)")
+      };
+      return this._uiVersion === VERSION_1_6 ? React.createElement("span", {
+        className: "mapboxgl-ctrl-icon",
+        "aria-hidden": "true",
+        style: style
+      }) : React.createElement("span", {
+        className: "mapboxgl-ctrl-compass-arrow",
+        style: style
       });
     }
   }, {
     key: "_renderButton",
     value: function _renderButton(type, label, callback, children) {
-      return createElement('button', {
+      return React.createElement("button", {
         key: type,
         className: "mapboxgl-ctrl-icon mapboxgl-ctrl-".concat(type),
-        type: 'button',
+        type: "button",
         title: label,
-        onClick: callback,
-        children: children
-      });
+        onClick: callback
+      }, children || React.createElement("span", {
+        className: "mapboxgl-ctrl-icon",
+        "aria-hidden": "true"
+      }));
     }
   }, {
     key: "_render",
@@ -102,11 +131,20 @@ var NavigationControl = function (_BaseControl) {
       var _this$props = this.props,
           className = _this$props.className,
           showCompass = _this$props.showCompass,
-          showZoom = _this$props.showZoom;
-      return createElement('div', {
+          showZoom = _this$props.showZoom,
+          zoomInLabel = _this$props.zoomInLabel,
+          zoomOutLabel = _this$props.zoomOutLabel,
+          compassLabel = _this$props.compassLabel;
+
+      if (!this._uiVersion) {
+        var map = this._context.map;
+        this._uiVersion = map ? getUIVersion(map.version) : VERSION_1_6;
+      }
+
+      return React.createElement("div", {
         className: "mapboxgl-ctrl mapboxgl-ctrl-group ".concat(className),
         ref: this._containerRef
-      }, [showZoom && this._renderButton('zoom-in', 'Zoom In', this._onZoomIn), showZoom && this._renderButton('zoom-out', 'Zoom Out', this._onZoomOut), showCompass && this._renderButton('compass', 'Reset North', this._onResetNorth, this._renderCompass())]);
+      }, showZoom && this._renderButton('zoom-in', zoomInLabel, this._onZoomIn), showZoom && this._renderButton('zoom-out', zoomOutLabel, this._onZoomOut), showCompass && this._renderButton('compass', compassLabel, this._onResetNorth, this._renderCompass()));
     }
   }]);
 

@@ -1,5 +1,7 @@
 "use strict";
 
+var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard");
+
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
@@ -11,21 +13,25 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
-
-var _getPrototypeOf3 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
-
 var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
 var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
+
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
+
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _react = require("react");
+var React = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _mapContext = _interopRequireDefault(require("./map-context"));
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 var propTypes = {
   captureScroll: _propTypes["default"].bool,
@@ -43,9 +49,9 @@ var defaultProps = {
 var BaseControl = function (_PureComponent) {
   (0, _inherits2["default"])(BaseControl, _PureComponent);
 
-  function BaseControl() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(BaseControl);
 
+  function BaseControl() {
     var _this;
 
     (0, _classCallCheck2["default"])(this, BaseControl);
@@ -54,10 +60,10 @@ var BaseControl = function (_PureComponent) {
       args[_key] = arguments[_key];
     }
 
-    _this = (0, _possibleConstructorReturn2["default"])(this, (_getPrototypeOf2 = (0, _getPrototypeOf3["default"])(BaseControl)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_context", {});
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_events", null);
-    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_containerRef", (0, _react.createRef)());
+    (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_containerRef", (0, React.createRef)());
     (0, _defineProperty2["default"])((0, _assertThisInitialized2["default"])(_this), "_onScroll", function (evt) {
       if (_this.props.captureScroll) {
         evt.stopPropagation();
@@ -100,7 +106,7 @@ var BaseControl = function (_PureComponent) {
           click: this._onClick,
           dblclick: this._onDblClick
         };
-        eventManager.on(this._events, ref);
+        eventManager.watch(this._events, ref);
       }
     }
   }, {
@@ -122,14 +128,14 @@ var BaseControl = function (_PureComponent) {
     value: function render() {
       var _this2 = this;
 
-      return (0, _react.createElement)(_mapContext["default"].Consumer, null, function (context) {
+      return React.createElement(_mapContext["default"].Consumer, null, function (context) {
         _this2._context = context;
         return _this2._render();
       });
     }
   }]);
   return BaseControl;
-}(_react.PureComponent);
+}(React.PureComponent);
 
 exports["default"] = BaseControl;
 (0, _defineProperty2["default"])(BaseControl, "propTypes", propTypes);

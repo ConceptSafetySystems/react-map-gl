@@ -33,17 +33,16 @@ export const ANCHOR_POSITION = {
   }
 };
 const ANCHOR_TYPES = Object.keys(ANCHOR_POSITION);
-export function getDynamicPosition(_ref) {
-  let {
-    x,
-    y,
-    width,
-    height,
-    selfWidth,
-    selfHeight,
-    anchor,
-    padding = 0
-  } = _ref;
+export function getDynamicPosition({
+  x,
+  y,
+  width,
+  height,
+  selfWidth,
+  selfHeight,
+  anchor,
+  padding = 0
+}) {
   let {
     x: anchorX,
     y: anchorY

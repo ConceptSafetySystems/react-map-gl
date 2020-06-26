@@ -1,11 +1,16 @@
 import _classCallCheck from "@babel/runtime/helpers/esm/classCallCheck";
 import _createClass from "@babel/runtime/helpers/esm/createClass";
-import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
-import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _assertThisInitialized from "@babel/runtime/helpers/esm/assertThisInitialized";
 import _inherits from "@babel/runtime/helpers/esm/inherits";
+import _possibleConstructorReturn from "@babel/runtime/helpers/esm/possibleConstructorReturn";
+import _getPrototypeOf from "@babel/runtime/helpers/esm/getPrototypeOf";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
-import { createElement } from 'react';
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function () { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BaseControl from '../components/base-control';
 import { window } from '../utils/globals';
@@ -22,9 +27,9 @@ var defaultProps = {
 var CanvasOverlay = function (_BaseControl) {
   _inherits(CanvasOverlay, _BaseControl);
 
-  function CanvasOverlay() {
-    var _getPrototypeOf2;
+  var _super = _createSuper(CanvasOverlay);
 
+  function CanvasOverlay() {
     var _this;
 
     _classCallCheck(this, CanvasOverlay);
@@ -33,7 +38,7 @@ var CanvasOverlay = function (_BaseControl) {
       args[_key] = arguments[_key];
     }
 
-    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(CanvasOverlay)).call.apply(_getPrototypeOf2, [this].concat(args)));
+    _this = _super.call.apply(_super, [this].concat(args));
 
     _defineProperty(_assertThisInitialized(_this), "_canvas", void 0);
 
@@ -91,7 +96,7 @@ var CanvasOverlay = function (_BaseControl) {
 
       this._redraw();
 
-      return createElement('canvas', {
+      return React.createElement("canvas", {
         ref: this._containerRef,
         width: width * pixelRatio,
         height: height * pixelRatio,

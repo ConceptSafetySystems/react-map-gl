@@ -15,8 +15,8 @@ const defaultProps = Object.assign({}, BaseControl.defaultProps, {
   offsetTop: 0
 });
 export default class DraggableControl extends BaseControl {
-  constructor() {
-    super(...arguments);
+  constructor(...args) {
+    super(...args);
 
     _defineProperty(this, "state", {
       dragPos: null,

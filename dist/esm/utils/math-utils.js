@@ -1,4 +1,4 @@
-var EPSILON = 1e-9;
+var EPSILON = 1e-7;
 
 function isArray(value) {
   return Array.isArray(value) || ArrayBuffer.isView(value);

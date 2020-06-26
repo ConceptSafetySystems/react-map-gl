@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.equals = equals;
 exports.clamp = clamp;
 exports.lerp = lerp;
-var EPSILON = 1e-9;
+var EPSILON = 1e-7;
 
 function isArray(value) {
   return Array.isArray(value) || ArrayBuffer.isView(value);
